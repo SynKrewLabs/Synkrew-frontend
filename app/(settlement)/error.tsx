@@ -24,6 +24,7 @@ import {
   BORDER, BORDER_THIN, SHADOW_OFFSET, SHADOW_OFFSET_SM,
   hardShadow, gridBgStyle,
 } from '../../theme/tokens';
+import { TitleBar, Button } from '../../components/ui';
 
 export default function SettlementError() {
   const { width } = useWindowDimensions();
@@ -45,15 +46,7 @@ export default function SettlementError() {
 
           {/* Error card */}
           <View style={[styles.card, hardShadow(SHADOW_OFFSET)]}>
-            <View style={[styles.titleBar, { backgroundColor: C.errorContainer }]}>
-              <View style={styles.dots}>
-                <View style={[styles.dot, { backgroundColor: C.pink }]} />
-                <View style={[styles.dot, { backgroundColor: C.white }]} />
-                <View style={[styles.dot, { backgroundColor: C.mint }]} />
-              </View>
-              <Text style={styles.titleBarLabel}>ERROR_SETTLEMENT.EXE</Text>
-              <View style={{ width: 48 }} />
-            </View>
+            <TitleBar label="ERROR_SETTLEMENT.EXE" color="pink" />
 
             <View style={styles.body}>
               {/* Error icon frame */}
@@ -104,24 +97,22 @@ export default function SettlementError() {
           </View>
 
           {/* Support CTA */}
-          <Pressable
+          <Button
             testID="settlement-error-btn-support"
-            style={[styles.supportBtn, hardShadow(SHADOW_OFFSET_SM)]}
+            label="CONTACT SUPPORT →"
+            variant="primary"
+            fullWidth
             onPress={handleContactSupport}
-            accessibilityRole="button"
-          >
-            <Text style={styles.supportBtnText}>CONTACT SUPPORT →</Text>
-          </Pressable>
+          />
 
           {/* Back to group — secondary */}
-          <Pressable
+          <Button
             testID="settlement-error-btn-back"
-            style={[styles.backBtn, hardShadow(SHADOW_OFFSET_SM)]}
+            label="RETURN TO GROUP"
+            variant="secondary"
+            fullWidth
             onPress={() => router.replace('/(groups)/detail')}
-            accessibilityRole="button"
-          >
-            <Text style={styles.backBtnText}>RETURN TO GROUP</Text>
-          </Pressable>
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

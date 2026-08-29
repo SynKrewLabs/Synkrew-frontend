@@ -24,7 +24,8 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { sessionManager } from '../../lib/session';
 import {
   C,
   S,
@@ -54,6 +55,7 @@ const DOTS: [string, string, string] = [C.pink, C.white, C.mint];
 
 export default function LoginScreen() {
   const { width } = useWindowDimensions();
+  const params = useLocalSearchParams<{ redirect?: string }>();
 
   const [values, setValues] = useState<FormValues>({ email: '', password: '' });
   const [errorState, setErrorState] = useState<LoginErrorState>('idle');
@@ -105,8 +107,9 @@ export default function LoginScreen() {
         throw new Error('NETWORK');
       }
 
-      // Success -> navigate to Groups Dashboard
-      router.replace('/(groups)');
+      // Success -> navigate to preserved target or Groups Dashboard
+      const target = params.redirect || sessionManager.restoreSession();
+      router.replace(target as any);
     } catch (e: any) {
       const msg: string = e?.message ?? '';
       if (msg === 'ACCOUNT_LOCKED') {

@@ -29,6 +29,7 @@ import {
 } from '../../theme/tokens';
 import { TitleBar } from '../../components/ui/TitleBar';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
+import { sessionManager } from '../../lib/session';
 
 export default function AccountSettingsScreen() {
   const { width } = useWindowDimensions();
@@ -39,7 +40,21 @@ export default function AccountSettingsScreen() {
   };
 
   const handleAuthMethods = () => {
-    Alert.alert('AUTH_SECURITY.EXE', 'Active sessions: 1 device. 2FA is active.');
+    Alert.alert(
+      'AUTH_SECURITY.EXE',
+      'Active sessions: 1 device. 2FA is active.',
+      [
+        { text: 'OK', style: 'cancel' },
+        {
+          text: 'Simulate Session Expiry',
+          style: 'destructive',
+          onPress: () => {
+            sessionManager.expireSession('/(profile)/settings');
+            router.push('/(auth)/session-expired');
+          },
+        },
+      ]
+    );
   };
 
   return (

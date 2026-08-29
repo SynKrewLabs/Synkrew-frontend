@@ -1,12 +1,9 @@
 /**
- * SynKrew — Card Component [STUB]
+ * SynKrew — Card Component
  * Arcade Pastel "OS Window" style card:
- * - TitleBar (colored 32px bar + monospace label) at top
  * - White/lavender body with 3px black border
  * - 4px hard offset shadow
- * - Optional "dog-ear" fold on top-right corner
- *
- * TODO (next session): Implement full card with TitleBar, dog-ear, body slots.
+ * - Standardized corner radius
  */
 
 import React from 'react';

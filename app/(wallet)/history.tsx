@@ -32,6 +32,7 @@ import {
   BORDER, BORDER_THIN, SHADOW_OFFSET, SHADOW_OFFSET_SM,
   hardShadow, gridBgStyle,
 } from '../../theme/tokens';
+import { EmptyState } from '../../components/ui/EmptyState';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type TxType =
@@ -273,63 +274,29 @@ export default function TransactionHistory() {
         <View style={{ width: cardWidth, alignSelf: 'center', gap: S.sm }}>
 
           {/* ═══ EMPTY STATE ═══ */}
-          {(listState === 'empty') && (
-            <View style={[styles.card, hardShadow(SHADOW_OFFSET)]}>
-              <View style={[styles.titleBar, { backgroundColor: C.surfaceContainerHigh }]}>
-                <View style={styles.dots}>
-                  <View style={[styles.dot, { backgroundColor: C.pink }]} />
-                  <View style={[styles.dot, { backgroundColor: C.white }]} />
-                  <View style={[styles.dot, { backgroundColor: C.mint }]} />
-                </View>
-                <Text style={styles.titleBarLabel}>LEDGER.EXE</Text>
-                <View style={{ width: 48 }} />
-              </View>
-              <View style={[styles.cardBody, { alignItems: 'center', gap: S.lg }]}>
-                <View style={[styles.emptyIconFrame, hardShadow(SHADOW_OFFSET_SM)]}>
-                  <Text style={styles.emptyIcon}>📋</Text>
-                </View>
-                <View style={{ alignItems: 'center', gap: S.xs }}>
-                  <Text style={styles.emptyHeadline}>NO TRANSACTIONS YET</Text>
-                  <Text style={styles.emptyBody}>
-                    Your ledger is empty. Transactions appear here after your first daily stake locks at midnight.
-                  </Text>
-                </View>
-              </View>
-            </View>
+          {listState === 'empty' && (
+            <EmptyState
+              windowTitle="LEDGER.EXE"
+              titleBarColor="lavender"
+              icon="📋"
+              headline="NO TRANSACTIONS YET"
+              description="Your ledger is empty. Transactions appear here after your first daily stake locks at midnight."
+              testID="history-empty-state"
+            />
           )}
 
           {/* ═══ FILTER NO RESULTS ═══ */}
           {listState === 'filtered' && (
-            <View style={[styles.card, hardShadow(SHADOW_OFFSET)]}>
-              <View style={[styles.titleBar, { backgroundColor: C.surfaceContainerHigh }]}>
-                <View style={styles.dots}>
-                  <View style={[styles.dot, { backgroundColor: C.pink }]} />
-                  <View style={[styles.dot, { backgroundColor: C.white }]} />
-                  <View style={[styles.dot, { backgroundColor: C.mint }]} />
-                </View>
-                <Text style={styles.titleBarLabel}>LEDGER.EXE</Text>
-                <View style={{ width: 48 }} />
-              </View>
-              <View style={[styles.cardBody, { alignItems: 'center', gap: S.lg }]}>
-                <View style={[styles.emptyIconFrame, hardShadow(SHADOW_OFFSET_SM)]}>
-                  <Text style={styles.emptyIcon}>🔍</Text>
-                </View>
-                <View style={{ alignItems: 'center', gap: S.xs }}>
-                  <Text style={styles.emptyHeadline}>NO RESULTS</Text>
-                  <Text style={styles.emptyBody}>
-                    No transactions match the current filter. Try a different group or clear the filter.
-                  </Text>
-                </View>
-                <Pressable
-                  testID="history-clear-filter"
-                  style={[styles.clearFilterBtn, hardShadow(SHADOW_OFFSET_SM)]}
-                  onPress={() => setActiveFilter('All Groups')}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.clearFilterBtnText}>CLEAR FILTER</Text>
-                </Pressable>
-              </View>
-            </View>
+            <EmptyState
+              windowTitle="LEDGER.EXE"
+              titleBarColor="lavender"
+              icon="🔍"
+              headline="NO RESULTS"
+              description="No transactions match the current filter. Try a different group or clear the filter."
+              actionLabel="CLEAR FILTER"
+              onAction={() => setActiveFilter('All Groups')}
+              testID="history-filtered-empty-state"
+            />
           )}
 
           {/* ═══ TRANSACTION LIST ═══ */}

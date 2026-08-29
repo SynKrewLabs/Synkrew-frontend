@@ -1,0 +1,187 @@
+# SynKrew — Screens Checklist
+
+Use this to track design (Stitch) and build (Expo) status per screen. Check off as each is: designed in Stitch → matches locked design system → built in Expo → uses shared components (no one-off styling).
+
+Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if tracking design/build separately.
+
+---
+
+## Design System Foundation (build before any screen)
+- [x] Color tokens extracted (`theme/colors.ts`)
+- [x] Spacing/radius tokens extracted (`theme/spacing.ts`)
+- [x] Typography tokens extracted (`theme/typography.ts`)
+- [x] `Button` component (Primary / Secondary / Inverted / Outlined variants)
+- [x] `Card` component
+- [x] `TitleBar` component (colored bar + monospace label pattern)
+- [x] `Input` component (with icon prefix, label, error state)
+- [x] `ProgressDots` component
+- [x] `ErrorBanner` component
+- [x] `StatusBadge` component (task states — color + icon)
+- [ ] Bottom nav bar component (with badge/pill support)
+
+---
+
+## 1. Onboarding & Auth
+- [x] Splash Screen (System Boot)
+- [x] Welcome / value-prop slide 1
+- [x] Welcome / value-prop slide 2 (Stake Coins)
+- [x] Welcome / value-prop slide 3 (Verify Each Other)
+- [ ] Signup
+- [ ] Signup — validation error
+- [ ] Signup — email already registered
+- [ ] Signup — network error on submit
+- [ ] Login
+- [ ] Login — invalid credentials error
+- [ ] Login — account locked / rate-limited
+- [ ] Login — network error
+- [ ] Forgot Password
+- [ ] Forgot Password — check-your-email confirmation
+- [ ] Forgot Password — reset link expired
+- [ ] Email/Phone Verification Pending
+- [ ] Verification — code expired
+- [ ] Verification — too many resend attempts
+
+## 2. Groups
+- [x] Groups List — populated
+- [x] Groups List — empty (first-run)
+- [x] Groups List — loading skeleton
+- [x] Groups List — offline (cached + banner)
+- [x] Create Group — Step 1: Name & Description
+- [x] Create Group — Step 1: validation error
+- [x] Create Group — Step 2: Task Definitions
+- [x] Create Group — Step 2: no tasks added (blocked state)
+- [x] Create Group — Step 3: Cycle Length & Stake %
+- [x] Create Group — Step 4: Invite Members
+- [x] Create Group — Step 4: contact permission denied
+- [x] Create Group — Step 5: Review
+- [x] Create Group — Step 5: at group-limit (redirect to Upsell)
+- [x] Create Group — Confirmation / success
+- [x] Create Group — creation failed (retry)
+- [x] Join Group — Invite Preview
+- [x] Join Group — invalid invite
+- [x] Join Group — expired invite
+- [x] Join Group — group full
+- [x] Join Group — already a member
+- [x] Join Group — previously removed/banned
+- [x] Join Group — private/pending-approval
+- [x] Join Group — invite revoked
+- [x] Join Group — Confirmation
+- [x] Group Detail — active
+- [x] Group Detail — paused
+- [x] Group Detail — archived (read-only)
+- [x] Group Detail — cycle ended, awaiting next cycle
+- [x] Group Settings / Lifecycle Management
+- [x] Group Settings — transfer ownership confirmation
+- [x] Group Settings — delete confirmation
+- [x] Task Definition Management
+- [x] Task Definition — cannot delete last task (blocked)
+
+## 3. Daily Task Submission
+- [x] Today's Task — Not started
+- [x] Today's Task — Capturing (in-app camera)
+- [x] Today's Task — Uploading
+- [x] Today's Task — Pending review
+- [x] Today's Task — Verified
+- [x] Today's Task — Failed
+- [x] Today's Task — Auto-passed
+- [x] Today's Task — Expired
+- [x] Today's Task — Skipped
+- [x] Camera permission denied
+- [x] Camera permanently denied (settings deep-link)
+- [x] Capture failure / retry
+- [x] Location denied
+- [x] Location unavailable/inaccurate
+- [x] Upload failed (retry)
+- [x] Offline capture / queued state
+
+## 4. Verification (signature interaction)
+- [x] Card stack — card appears / dwell locked (0–5s)
+- [x] Card stack — dwell complete / active
+- [x] Card stack — approve (swipe/button)
+- [x] Card stack — reject → reason sheet
+- [x] Card stack — reject → exit confirmation
+- [x] Empty queue state
+- [x] Proof already resolved (silent removal — confirm UX)
+- [x] Proof expired
+- [x] Network failure mid-vote
+
+## 5. Settlement / Results
+- [x] Daily Settlement Summary
+- [x] Settlement — pending/processing
+- [x] Settlement — failed to compute (error state)
+- [x] Milestone Celebration (50/75/100%)
+- [x] Milestone reached while app closed (notification deep-link)
+- [x] Cycle Results (final day)
+- [x] Cycle Results — non-creator waiting state
+- [x] Cycle Results — force-closed banner
+
+## 6. League
+- [x] League Standings — full screen
+- [x] League Standings — season not started
+- [x] League Standings — group not yet ranked
+- [x] League Standings — loading/offline
+- [x] Group's League Widget (embedded)
+
+## 7. Wallet
+- [x] Wallet Home — balance breakdown
+- [x] Wallet Home — zero balance state
+- [x] Wallet Home — loading skeleton
+- [x] Transaction History
+- [x] Transaction History — empty
+- [x] Transaction History — filter returns no results
+- [x] Transaction Detail sheet (incl. Win Share example)
+
+## 8. Subscription / Tier
+- [x] Subscription screen (tier comparison table)
+- [x] Upsell Modal
+- [x] Upsell — dismiss/return state
+- [x] Purchase Flow — Processing
+- [x] Purchase Flow — Success
+- [x] Purchase Flow — Failed
+- [x] Purchase Flow — Cancelled
+- [x] Purchase Flow — payment provider error
+
+## 9. Profile / Account
+- [x] Profile Home
+- [x] Account Settings
+- [x] Delete Account — confirmation
+- [x] Logout confirmation
+
+## 10. Notifications
+- [x] Notification Inbox — populated
+- [x] Notification Inbox — empty
+- [x] Push permission-off banner
+
+## 11. Permissions
+- [x] Camera permission prompt
+- [x] Camera — denied
+- [x] Camera — permanently denied
+- [x] Location permission prompt
+- [x] Location — denied
+- [x] Location — permanently denied
+- [x] Location — OS-level services off
+
+## 12. Global System States
+(apply as shared components/patterns across all screens above, not one-off designs)
+- [x] Loading / Skeleton pattern
+- [x] Empty-state pattern (invitation-to-act tone)
+- [x] Error/Retry pattern
+- [x] Offline banner
+- [x] Session expired / logged out redirect
+
+---
+
+## Consistency Audit Pass (do this after all screens are built)
+Check each against the locked reference screens (Onboarding: Verify Each Other, Onboarding: Stake Coins, Sign Up, Login: Error State):
+- [x] All buttons use the shared `Button` component (no inline/one-off styles)
+- [x] All cards use the shared `Card` component
+- [x] All title bars use the shared `TitleBar` component
+- [x] Corner radius consistent across all components (pull from `theme/spacing.ts`)
+- [x] Border weight consistent (pull from theme)
+- [x] Color usage matches token roles (primary/secondary/error etc.) — no hardcoded hex values in screen code
+- [x] Typography matches token roles (headline/body/label) — no inline font overrides
+- [x] No stock/AI-generated photography anywhere — flat vector/icon only
+- [x] Error states all use the shared `ErrorBanner` pattern
+- [x] Status badges (task states) all use distinct color + icon, not color alone
+
+**Total: 31 primary screens · 63 fallback/edge states · 94 items to design + build**

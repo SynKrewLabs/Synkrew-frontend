@@ -36,6 +36,10 @@ import {
   BORDER, BORDER_THIN, SHADOW_OFFSET, SHADOW_OFFSET_SM,
   hardShadow, gridBgStyle,
 } from '../../theme/tokens';
+import { TitleBar } from '../../components/ui/TitleBar';
+import { OfflineBanner } from '../../components/ui/OfflineBanner';
+import { SkeletonBlock, SkeletonRow } from '../../components/ui/Skeleton';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
 
 export type LeagueViewState = 'standings' | 'season_off' | 'not_ranked' | 'loading';
@@ -126,38 +130,6 @@ const MOCK_STANDINGS: LeagueEntry[] = [
   },
 ];
 
-// ─── Skeleton block component ─────────────────────────────────────────────────
-function SkeletonBlock({
-  width, height, style,
-}: { width: number | string; height: number; style?: object }) {
-  const opacity = useRef(new Animated.Value(0.4)).current;
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.9, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.4, duration: 700, useNativeDriver: true }),
-      ])
-    );
-    anim.start();
-    return () => anim.stop();
-  }, [opacity]);
-  return (
-    <Animated.View
-      style={[
-        {
-          width: width as any,
-          height,
-          backgroundColor: C.surfaceContainerHigh,
-          borderWidth: BORDER_THIN,
-          borderColor: C.black,
-          opacity,
-        },
-        style,
-      ]}
-    />
-  );
-}
-
 export default function LeagueStandings() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -218,27 +190,16 @@ export default function LeagueStandings() {
           {/* ═══════════════ LOADING STATE ═══════════════ */}
           {viewState === 'loading' && (
             <View style={[styles.card, hardShadow(SHADOW_OFFSET)]}>
-              <View style={[styles.titleBar, { backgroundColor: C.surfaceContainerHigh }]}>
-                <View style={styles.dots}>
-                  <View style={[styles.dot, { backgroundColor: C.pink }]} />
-                  <View style={[styles.dot, { backgroundColor: C.white }]} />
-                  <View style={[styles.dot, { backgroundColor: C.mint }]} />
-                </View>
-                <Text style={styles.titleBarLabel}>LEAGUE_STANDINGS.EXE</Text>
-                <View style={{ width: 48 }} />
-              </View>
+              <TitleBar label="LEAGUE_STANDINGS.EXE" color="lavender" />
               <View style={styles.cardBody}>
                 {/* Offline notice */}
-                <View style={styles.offlineBanner}>
-                  <Text style={styles.offlineBannerText}>📡 LOADING — SHOWING CACHED DATA IF AVAILABLE</Text>
-                </View>
+                <OfflineBanner
+                  label="LOADING — SHOWING CACHED DATA"
+                  style={{ marginBottom: S.sm }}
+                />
                 {/* Skeleton rows */}
                 {[1, 2, 3, 4].map(i => (
-                  <View key={i} style={styles.skeletonRow}>
-                    <SkeletonBlock width={28} height={28} />
-                    <SkeletonBlock width="55%" height={16} />
-                    <SkeletonBlock width={48} height={16} />
-                  </View>
+                  <SkeletonRow key={i} />
                 ))}
               </View>
             </View>

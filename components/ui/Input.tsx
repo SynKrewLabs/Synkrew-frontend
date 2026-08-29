@@ -1,13 +1,9 @@
 /**
- * SynKrew — Input Component [STUB]
- * Design spec:
+ * SynKrew — Input Component
+ * Arcade Pastel Input:
  * - White bg, 3px black border, blocky radius
- * - Focus state: border changes to Cyan with 2px inner pixelated shadow
- * - Icon prefix slot (left)
- * - Label above input
- * - Error state below input
- *
- * TODO (next session): Implement full input with focus state, icon prefix, label, error.
+ * - Focus state: Cyan border accent
+ * - Label & error messaging support
  */
 
 import React, { useState } from 'react';

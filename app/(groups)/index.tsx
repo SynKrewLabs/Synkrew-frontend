@@ -34,6 +34,9 @@ import {
   gridBgStyle,
 } from '../../theme/tokens';
 import { TitleBar } from '../../components/ui/TitleBar';
+import { OfflineBanner } from '../../components/ui/OfflineBanner';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { SkeletonCard } from '../../components/ui/Skeleton';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
 
 type GroupsViewState = 'populated' | 'empty' | 'loading' | 'offline';
@@ -173,15 +176,11 @@ export default function GroupsListScreen() {
 
       {/* Persistent Offline Banner (Offline Mode) */}
       {isOffline && (
-        <View testID="groups-offline-banner" style={styles.offlineBanner}>
-          <Text style={styles.offlineBannerIcon}>⚠️</Text>
-          <View style={styles.offlineBannerContent}>
-            <Text style={styles.offlineBannerTitle}>OFFLINE MODE — CACHED DATA</Text>
-            <Text style={styles.offlineBannerText}>
-              Displaying local offline pact cache. Create and join actions are temporarily disabled until connection is restored.
-            </Text>
-          </View>
-        </View>
+        <OfflineBanner
+          label="OFFLINE MODE — CACHED DATA"
+          subtitle="Displaying local offline pact cache. Create and join actions are temporarily disabled until connection is restored."
+          testID="groups-offline-banner"
+        />
       )}
 
       {/* Main Content Area */}
@@ -288,61 +287,25 @@ export default function GroupsListScreen() {
 
           {/* ─── State 2: Empty State (First-Run) ─── */}
           {viewState === 'empty' && (
-            <View style={[styles.emptyCard, hardShadow(SHADOW_OFFSET)]}>
-              <View style={styles.emptyIconContainer}>
-                <View style={styles.emptyIconShadow} />
-                <View style={styles.emptyIconBox}>
-                  <Text style={styles.emptyIconText}>🚫👥</Text>
-                </View>
-              </View>
-
-              <View style={styles.emptyPromptBox}>
-                <Text style={styles.emptyPromptTag}>&gt; SYSTEM MSG: NO PACTS DETECTED</Text>
-                <Text style={styles.emptyPromptHeading}>JOIN_OR_CREATE_PACT</Text>
-                <Text style={styles.emptyPromptDesc}>
-                  You are not currently enrolled in any synchronization circle. Initialize a new accountability pact or enter an invite key.
-                </Text>
-              </View>
-
-              <View style={{ width: '100%', gap: S.sm }}>
-                <Pressable
-                  testID="empty-btn-create-group"
-                  style={styles.primaryActionBtn}
-                  onPress={() => router.push('/(groups)/create/step-1')}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.primaryActionBtnText}>+ INITIALIZE_FIRST_GROUP</Text>
-                </Pressable>
-
-                <Pressable
-                  testID="empty-btn-join-group"
-                  style={styles.secondaryActionBtn}
-                  onPress={() => router.push('/(groups)/join')}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.secondaryActionBtnText}>JOIN WITH INVITE KEY</Text>
-                </Pressable>
-              </View>
-            </View>
+            <EmptyState
+              windowTitle="GROUPS_STATUS.EXE"
+              titleBarColor="lavender"
+              icon="👥"
+              headline="JOIN_OR_CREATE_PACT"
+              description="You are not currently enrolled in any synchronization circle. Initialize a new accountability pact or enter an invite key."
+              actionLabel="+ INITIALIZE_FIRST_GROUP"
+              onAction={() => router.push('/(groups)/create/step-1')}
+              secondaryActionLabel="JOIN WITH INVITE KEY"
+              onSecondaryAction={() => router.push('/(groups)/join')}
+              testID="groups-empty-state"
+            />
           )}
 
           {/* ─── State 3: Loading Skeleton ─── */}
           {viewState === 'loading' && (
             <View testID="groups-loading-skeleton" style={{ gap: S.md }}>
-              {[1, 2].map(idx => (
-                <View key={idx} style={[styles.skeletonCard, hardShadow(SHADOW_OFFSET)]}>
-                  <Animated.View style={[styles.skeletonHeader, { opacity: pulseAnim }]} />
-                  <View style={styles.skeletonBody}>
-                    <Animated.View style={[styles.skeletonLine, { width: '40%', height: 20, opacity: pulseAnim }]} />
-                    <Animated.View style={[styles.skeletonLine, { width: '70%', height: 28, opacity: pulseAnim }]} />
-                    <Animated.View style={[styles.skeletonLine, { width: '50%', height: 16, opacity: pulseAnim }]} />
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: S.sm }}>
-                      <Animated.View style={[styles.skeletonLine, { width: '45%', height: 32, opacity: pulseAnim }]} />
-                      <Animated.View style={[styles.skeletonLine, { width: '30%', height: 32, opacity: pulseAnim }]} />
-                    </View>
-                  </View>
-                </View>
-              ))}
+              <SkeletonCard hasImage={false} />
+              <SkeletonCard hasImage={false} />
             </View>
           )}
         </View>

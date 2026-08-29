@@ -1,51 +1,72 @@
 /**
- * SynKrew — ErrorBanner Component [STUB]
- * Shared error/warning banner pattern used across all screens.
+ * SynKrew — ErrorBanner Component
+ * Canonical inline alert banner implementation.
  *
- * Design: Red fill or error-container, 3px black border, label-md text.
- * Always includes an icon (⚠) paired with text — never color alone (accessibility).
- *
- * TODO (next session): Add icon prop, dismiss action, animation.
+ * Design Language:
+ * - Red fill / error-container for error, yellow for warning, surfaceContainerHigh for info
+ * - 3px black border, label-md typography
+ * - Always includes an icon paired with text (never color alone)
+ * - Optional inline action / retry trigger button
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  Pressable,
+} from 'react-native';
 import { Colors, Typography, BorderWidth, Radius, Spacing } from '../../theme';
 
 export type ErrorBannerType = 'error' | 'warning' | 'info';
 
-interface ErrorBannerProps {
+export interface ErrorBannerProps {
   message: string;
   type?: ErrorBannerType;
+  icon?: string;
   style?: ViewStyle;
   actionLabel?: string;
   onAction?: () => void;
+  testID?: string;
 }
 
-const TYPE_COLORS: Record<ErrorBannerType, { bg: string; text: string }> = {
-  error: { bg: Colors.errorContainer, text: Colors.onErrorContainer },
-  warning: { bg: Colors.yellow, text: Colors.strokeObsidian },
-  info: { bg: Colors.surfaceContainerHigh, text: Colors.onSurface },
+const TYPE_COLORS: Record<ErrorBannerType, { bg: string; text: string; icon: string }> = {
+  error: { bg: Colors.errorContainer, text: Colors.onErrorContainer, icon: '✕' },
+  warning: { bg: Colors.yellow, text: Colors.strokeObsidian, icon: '⚠' },
+  info: { bg: Colors.surfaceContainerHigh, text: Colors.onSurface, icon: 'ℹ' },
 };
 
-const TYPE_ICONS: Record<ErrorBannerType, string> = {
-  error: '✕',
-  warning: '⚠',
-  info: 'ℹ',
-};
-
-import { Pressable } from 'react-native';
-
-export function ErrorBanner({ message, type = 'error', style, actionLabel, onAction }: ErrorBannerProps) {
-  const { bg, text } = TYPE_COLORS[type];
+export function ErrorBanner({
+  message,
+  type = 'error',
+  icon,
+  style,
+  actionLabel,
+  onAction,
+  testID = 'error-banner',
+}: ErrorBannerProps) {
+  const config = TYPE_COLORS[type];
+  const displayIcon = icon || config.icon;
 
   return (
-    <View style={[styles.container, { backgroundColor: bg }, style]}>
-      <Text style={[styles.icon, { color: text }]}>{TYPE_ICONS[type]}</Text>
-      <Text style={[styles.message, { color: text }]}>{message}</Text>
+    <View
+      testID={testID}
+      style={[styles.container, { backgroundColor: config.bg }, style]}
+      accessible
+      accessibilityRole="alert"
+    >
+      <Text style={[styles.icon, { color: config.text }]}>{displayIcon}</Text>
+      <Text style={[styles.message, { color: config.text }]}>{message}</Text>
       {actionLabel && onAction && (
-        <Pressable style={styles.actionBtn} onPress={onAction}>
-          <Text style={styles.actionText}>{actionLabel}</Text>
+        <Pressable
+          style={styles.actionBtn}
+          onPress={onAction}
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel={actionLabel}
+        >
+          <Text style={styles.actionText}>{actionLabel.toUpperCase()}</Text>
         </Pressable>
       )}
     </View>
@@ -56,31 +77,36 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     borderWidth: BorderWidth.container,
     borderColor: Colors.strokeObsidian,
     borderRadius: Radius.DEFAULT,
     paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.gutter,
+    width: '100%',
   },
   icon: {
     ...Typography.labelMd,
     fontSize: 16,
+    lineHeight: 18,
+    fontWeight: '900',
   },
   message: {
     ...Typography.bodyMd,
+    fontSize: 13,
+    lineHeight: 18,
     flex: 1,
   },
   actionBtn: {
     backgroundColor: Colors.surface,
-    borderWidth: 1,
+    borderWidth: BorderWidth.accent,
     borderColor: Colors.strokeObsidian,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginLeft: 6,
+    paddingVertical: 4,
+    borderRadius: Radius.sm,
   },
   actionText: {
-    fontFamily: 'JetBrainsMono',
+    ...Typography.labelMd,
     fontSize: 10,
     fontWeight: '900',
     color: Colors.strokeObsidian,

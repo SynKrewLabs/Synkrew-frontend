@@ -1,12 +1,10 @@
 /**
- * SynKrew — StatusBadge Component [STUB]
+ * SynKrew — StatusBadge Component
  * Used for task instance states: Not started / Uploading / Pending / Verified /
  * Failed / Skipped / Auto-passed / Expired
  *
- * Design: Small rectangular chip with "stepped" corners.
+ * Design: Small rectangular chip with stepped corners.
  * RULE: Always pair color with an icon — never color alone (accessibility, §13).
- *
- * TODO (next session): Wire up all task states with correct colors + pixel icons.
  */
 
 import React from 'react';

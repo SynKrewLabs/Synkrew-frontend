@@ -41,6 +41,7 @@ import {
 } from '../../theme/tokens';
 import { TitleBar } from '../ui/TitleBar';
 import { ErrorBanner } from '../ui/ErrorBanner';
+import { EmptyState } from '../ui/EmptyState';
 import { RejectionReasonSheet } from './RejectionReasonSheet';
 
 export const DWELL_DURATION_MS = 5000;
@@ -269,34 +270,17 @@ export function VerificationCardStack({ onQueueCountChange }: VerificationCardSt
   if (!currentCard || currentIndex >= queue.length) {
     return (
       <View style={styles.emptyContainer}>
-        <View style={[styles.emptyCard, hardShadow(SHADOW_OFFSET), { width: cardWidth }]}>
-          <TitleBar label="QUEUE_EMPTY.EXE" color="mint" />
-
-          <View style={styles.emptyBody}>
-            <View style={styles.emptyIconBox}>
-              <Text style={styles.emptyIcon}>🎉</Text>
-            </View>
-
-            <View style={styles.emptyTextBlock}>
-              <View style={styles.emptyBadge}>
-                <Text style={styles.emptyBadgeText}>0 PENDING IN QUORUM</Text>
-              </View>
-              <Text style={styles.emptyTitle}>ALL PROOFS VERIFIED</Text>
-              <Text style={styles.emptyDesc}>
-                Your verification queue is completely clear. Check back later as your squad mates complete their daily rituals.
-              </Text>
-            </View>
-
-            <Pressable
-              testID="verify-btn-return-groups"
-              style={[styles.returnGroupsBtn, hardShadow(SHADOW_OFFSET_SM)]}
-              onPress={() => router.replace('/(groups)')}
-              accessibilityRole="button"
-            >
-              <Text style={styles.returnGroupsBtnText}>RETURN TO GROUPS DASHBOARD</Text>
-            </Pressable>
-          </View>
-        </View>
+        <EmptyState
+          windowTitle="QUEUE_EMPTY.EXE"
+          titleBarColor="mint"
+          icon="🎉"
+          headline="ALL PROOFS VERIFIED"
+          description="Your verification queue is completely clear. Check back later as your squad mates complete their daily rituals."
+          actionLabel="RETURN TO GROUPS DASHBOARD"
+          onAction={() => router.replace('/(groups)')}
+          testID="verify-empty-queue-state"
+          style={{ width: cardWidth }}
+        />
       </View>
     );
   }

@@ -30,38 +30,11 @@ import {
   BORDER, BORDER_THIN, SHADOW_OFFSET, SHADOW_OFFSET_SM,
   hardShadow, gridBgStyle,
 } from '../../theme/tokens';
+import { TitleBar } from '../../components/ui/TitleBar';
+import { SkeletonBlock } from '../../components/ui/Skeleton';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
 
 export type WalletViewState = 'balance' | 'zero' | 'loading';
-
-// ─── Skeleton block ───────────────────────────────────────────────────────────
-function SkeletonBlock({
-  width, height, style,
-}: { width: number | string; height: number; style?: object }) {
-  const opacity = useRef(new Animated.Value(0.4)).current;
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.9, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.4, duration: 700, useNativeDriver: true }),
-      ])
-    );
-    anim.start();
-    return () => anim.stop();
-  }, [opacity]);
-  return (
-    <Animated.View
-      style={[{
-        width: width as any,
-        height,
-        backgroundColor: C.surfaceContainerHigh,
-        borderWidth: BORDER_THIN,
-        borderColor: C.black,
-        opacity,
-      }, style]}
-    />
-  );
-}
 
 export default function WalletHome() {
   const { width } = useWindowDimensions();
@@ -128,15 +101,7 @@ export default function WalletHome() {
           {/* ═══ LOADING SKELETON ═══ */}
           {viewState === 'loading' && (
             <View style={[styles.card, hardShadow(SHADOW_OFFSET)]}>
-              <View style={[styles.titleBar, { backgroundColor: C.surfaceContainerHigh }]}>
-                <View style={styles.dots}>
-                  <View style={[styles.dot, { backgroundColor: C.pink }]} />
-                  <View style={[styles.dot, { backgroundColor: C.white }]} />
-                  <View style={[styles.dot, { backgroundColor: C.mint }]} />
-                </View>
-                <Text style={styles.titleBarLabel}>WALLET.EXE</Text>
-                <View style={{ width: 48 }} />
-              </View>
+              <TitleBar label="WALLET.EXE" color="lavender" />
               <View style={styles.cardBody}>
                 {/* Balance skeleton */}
                 <View style={styles.skeletonBalanceRow}>

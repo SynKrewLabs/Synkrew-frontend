@@ -71,6 +71,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)/verify" />
         <Stack.Screen name="(auth)/forgot-password" />
         <Stack.Screen name="(auth)/reset-password" />
+        <Stack.Screen name="(auth)/session-expired" />
         <Stack.Screen name="(main)/groups" />
         <Stack.Screen name="(groups)" />
         <Stack.Screen name="(task)" />

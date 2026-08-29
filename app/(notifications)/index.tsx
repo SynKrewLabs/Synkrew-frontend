@@ -27,6 +27,7 @@ import {
   gridBgStyle,
 } from '../../theme/tokens';
 import { TitleBar } from '../../components/ui/TitleBar';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
 
 interface NotificationItem {
@@ -196,27 +197,16 @@ export default function NotificationInboxScreen() {
 
           {isEmptyState || notifications.length === 0 ? (
             /* Empty State Window */
-            <View style={[styles.emptyCard, hardShadow(SHADOW_OFFSET)]}>
-              <View style={styles.emptyIconBox}>
-                <Text style={styles.emptyIconEmoji}>📭</Text>
-              </View>
-              <View style={styles.emptyTextBlock}>
-                <Text style={styles.emptyHeadline}>QUEUE_CLEAN</Text>
-                <Text style={styles.emptyDesc}>
-                  Nothing to report. Check back when your Krew starts moving.
-                </Text>
-              </View>
-              <Pressable
-                testID="btn-refresh-inbox"
-                style={[styles.refreshBtn, hardShadow(SHADOW_OFFSET_SM)]}
-                onPress={() => setIsEmptyState(false)}
-                accessibilityRole="button"
-                accessibilityLabel="Refresh Status"
-              >
-                <Text style={styles.refreshIcon}>↻</Text>
-                <Text style={styles.refreshBtnText}>REFRESH STATUS</Text>
-              </Pressable>
-            </View>
+            <EmptyState
+              windowTitle="INBOX_EMPTY.EXE"
+              titleBarColor="mint"
+              icon="📭"
+              headline="QUEUE_CLEAN"
+              description="Nothing to report. Check back when your Krew starts moving."
+              actionLabel="REFRESH STATUS"
+              onAction={() => setIsEmptyState(false)}
+              testID="notifications-empty-state"
+            />
           ) : (
             /* Populated State Window */
             <View style={[styles.inboxWindow, hardShadow(SHADOW_OFFSET)]}>
