@@ -175,6 +175,3 @@ The following items are intentionally marked in the codebase for production back
 
 ---
 
-## License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
