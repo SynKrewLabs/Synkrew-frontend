@@ -1,6 +1,10 @@
-# SynKrew — UI/UX Screen Inventory (v1)
+# SynKrew — UI/UX Screen Inventory (v1.2)
 
-Companion doc to the Frontend UX Plan (v1.2). That doc defines flows and logic; this doc enumerates **every screen/state that needs a design**, including fallback, empty, error, and permission states, so nothing gets designed ad hoc mid-build.
+Companion doc to the Frontend UX Plan (v1.5). That doc defines flows and logic; this doc enumerates **every screen/state that needs a design**, including fallback, empty, error, and permission states, so nothing gets designed ad hoc mid-build.
+
+**Update from v1.1**: confirmed Define Tasks and Schedule Tasks (§2.3, §2.3a) are **shared screens** used by both Create Group and Join Group, not separate designs per flow — removed the duplicate "Join Group: Define Your Tasks" / "Join Group: Schedule Tasks" entries. Join Group now only lists what's unique to it: Invite Preview, Accept/Decline, and Confirmation.
+
+**Update from v1**: task definitions are now per-member (creator and every joining member each define their own 3 tasks), not group-wide/creator-only. Adds a new **Schedule Tasks** screen after task definition. Task Definition Management (§2.12) is now member-scoped rather than creator-only, and gains a companion Task Schedule Management screen. Verification card (§4.1) gains a task-owner label element.
 
 Each entry: **Screen** — Purpose — Key elements — Fallback/edge states.
 
@@ -11,7 +15,7 @@ Each entry: **Screen** — Purpose — Key elements — Fallback/edge states.
 | Category | Primary screens | Fallback/edge states |
 |---|---|---|
 | Onboarding & Auth | 6 | 7 |
-| Groups | 8 | 11 |
+| Groups | 10 | 12 |
 | Daily Task | 1 (multi-state) | 8 |
 | Verification | 1 (multi-state) | 7 |
 | Settlement | 3 | 3 |
@@ -22,7 +26,7 @@ Each entry: **Screen** — Purpose — Key elements — Fallback/edge states.
 | Notifications | 1 | 2 |
 | Permissions | 2 | 4 |
 | Global system states | — | 6 |
-| **Total** | **31** | **63** |
+| **Total** | **33** | **64** |
 
 ---
 
@@ -67,9 +71,15 @@ Fallback states: **empty (no groups)** → see §1.6, **loading skeleton**, **of
 ### 2.2 Create Group — Step 1: Name & Description
 Fallback: **name validation error** (empty/too long).
 
-### 2.3 Create Group — Step 2: Task Definitions
-Elements: add task (title, repeat pattern), supports multiple tasks/day.
+### 2.3 Define Tasks *(shared screen — used by both Create Group and Join Group, see reuse note in §2.9c)*
+Purpose: the current user (creator, during Create Group; or a joining member, during Join Group) defines their **own** 3 personal tasks. Not group-wide — this is one screen entered from two different points in navigation, not two separate designs.
+Elements: add task (title, repeat pattern), supports multiple tasks/day, cap at 3.
 Fallback: **no tasks added yet** (blocks "Next"), **duplicate task name warning**.
+
+### 2.3a Schedule Tasks *(shared screen — used by both Create Group and Join Group, see reuse note in §2.9c)*
+Purpose: the current user assigns their 3 tasks across the week.
+Elements: 7-day × 3-task checkbox grid (Mon–Sun columns, task rows or vice versa), any subset per day, multiple tasks allowed on the same day.
+Fallback: **day with zero tasks checked** (blocks "Next" — every day requires ≥1 task).
 
 ### 2.4 Create Group — Step 3: Cycle Length & Stake %
 Elements: 7/30-day toggle, stake % slider/preset chips (25/50/60/75%).
@@ -87,13 +97,20 @@ Fallback: **at group-limit** → blocks creation, redirects to Upsell (§8.2) in
 Elements: success state, lands in new Group Detail.
 Fallback: **creation failed** (network/server error) → retry, draft preserved.
 
+**Create Group flow order**: Name/Description (§2.2) → Define Tasks (§2.3) → Schedule Tasks (§2.3a) → Cycle Length & Stake % (§2.4) → Invite Members (§2.5) → Review (§2.6) → Confirmation (§2.7).
+
 ### 2.8 Join Group — Invite Preview
-Elements: group name, creator, member count/cap, task + stake summary, group rules.
+Elements: group name, creator, member count/cap, **stake % + cycle length** (no task summary — tasks are per-member now, so there's no shared task list to preview here), group rules.
 Fallback states: **invalid invite**, **expired invite**, **group full**, **already a member**, **user previously removed/banned from this group**, **private group requiring creator approval** (pending-approval state), **invite revoked after link opened**.
 
-### 2.9 Join Group — Confirmation
-Elements: Accept/Decline, lands in Group Detail on accept.
+### 2.9 Join Group — Accept/Decline
+Elements: Accept/Decline.
 Fallback: **client-side group-count limit check fails** → redirect to Upsell before allowing Accept.
+
+### 2.9c Join Group — Confirmation
+Elements: success state, lands in Group Detail — member can now see every other member's tasks (group-wide visibility).
+
+**Join Group flow order — reuse note**: Invite Preview (§2.8) → Accept/Decline (§2.9) → **Define Tasks (§2.3, the same screen as Create Group)** → **Schedule Tasks (§2.3a, the same screen as Create Group)** → Confirmation (§2.9c). There is no separate "Join Group: Define Your Tasks" or "Join Group: Schedule Tasks" screen — §2.3 and §2.3a are each a single screen entered from either flow. Only Invite Preview, Accept/Decline, and Confirmation are unique to Join Group.
 
 ### 2.10 Group Detail
 Purpose: hub for one group — today's task status, members, cycle progress, milestone bar.
@@ -105,8 +122,14 @@ Elements: edit name/description, add/remove members, transfer ownership, archive
 Fallback states: **transfer-ownership confirmation** (destructive-action pattern), **creator attempts to leave with no other members** → forced into archive flow, **delete confirmation** (double-confirm, destructive).
 
 ### 2.12 Task Definition Management
-Elements: add/edit/delete task (creator-only), pause task (keeps history), change repeat pattern.
-Fallback: **cannot delete last remaining task** (group needs ≥1 active task) → blocked with explanation.
+Purpose: member-scoped, not creator-only — each member (creator included) manages only their own tasks, though all members' tasks are visible group-wide.
+Elements: add/edit/delete own task, pause task (keeps history), change repeat pattern.
+Fallback: **cannot delete last remaining task** (each member needs ≥1 active task) → blocked with explanation.
+
+### 2.12a Task Schedule Management
+Purpose: member-scoped weekday schedule editing, companion to §2.12.
+Elements: same 7-day × task checkbox grid as onboarding, editable after the fact.
+Fallback: **cannot uncheck last task on a day** (blocked with explanation), **deleting a task that would leave a day at zero** (blocked/reassign prompt).
 
 ---
 
@@ -134,7 +157,7 @@ Elements per state: countdown to cutoff, capture button, geo/timestamp confirmat
 ### 4.1 Verification Card Stack (state machine — one screen, many states)
 Purpose: cross-group swipeable proof review, the product's core daily loop.
 States: **Card appears (0s, dwell locked)** → **5s dwell complete (active)** → **Approve (swipe right)** / **Reject (swipe left → reason sheet → exit)**.
-Elements: proof image, submitter, group name, timestamp/location chip, dwell-timer ring, vote count ("1 of 2 needed"), button fallback pair.
+Elements: proof image, submitter, group name, **task name (which of the submitter's own tasks this proof is for — required now that tasks are per-member, not shared)**, timestamp/location chip, dwell-timer ring, vote count ("1 of 2 needed"), button fallback pair.
 
 **Fallback/edge states:**
 - **Empty queue** (nothing to verify) → dedicated empty state, not a blank screen (see §12 for tone)

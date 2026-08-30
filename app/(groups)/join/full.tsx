@@ -12,23 +12,26 @@ export default function JoinGroupFull() {
   return (
     <JoinErrorLayout
       testID="join-error-full-screen"
-      windowTitle="NO_VACANCY.EXE"
+      windowTitle="GROUP_FULL.EXE"
       titleBarColor="pink"
       iconText="👥"
       badgeLabel="CAPACITY: 100% (FULL)"
-      headline="ERROR: GROUP_CAPACITY_REACHED"
-      description="Connection refused. The target Krew has reached its maximum member limit. Level up your own group or keep exploring the network."
+      headline="GROUP AT MAXIMUM CAPACITY"
+      description="Connection refused. This Krew has filled all available squad slots. The creator must upgrade membership tier or remove inactive members to unlock new seats."
       extraContent={
         <View style={styles.capacityContainer}>
           <View style={styles.capacityHeader}>
             <Text style={styles.capacityLabel}>SQUAD SLOTS</Text>
-            <Text style={styles.capacityStatus}>8/8 OCCUPIED</Text>
+            <Text style={styles.capacityStatus}>10/10 OCCUPIED</Text>
           </View>
 
           {/* Segmented 100% capacity bar with last red block */}
           <View style={styles.capacityBar}>
-            {[1, 2, 3, 4, 5, 6, 7].map(i => (
-              <View key={i} style={[styles.capacitySegment, { backgroundColor: C.tertiaryContainer }]} />
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+              <View
+                key={i}
+                style={[styles.capacitySegment, { backgroundColor: C.secondaryContainer }]}
+              />
             ))}
             <View style={[styles.capacitySegment, { backgroundColor: C.error }]} />
           </View>

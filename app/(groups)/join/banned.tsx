@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { JoinErrorLayout } from '../../../components/groups/JoinErrorLayout';
-import { C, T, BORDER, BORDER_THIN, S } from '../../../theme/tokens';
+import { C, T, BORDER_THIN, S } from '../../../theme/tokens';
 
 export default function JoinGroupBanned() {
   return (
@@ -15,7 +15,7 @@ export default function JoinGroupBanned() {
       windowTitle="ACCESS_DENIED.EXE"
       titleBarColor="pink"
       iconText="🚫"
-      badgeLabel="ACCESS_LEVEL: REVOKED (PERMANENT)"
+      badgeLabel="ACCESS: BLACKLISTED"
       headline="ENTRY FORBIDDEN"
       description="Your account credentials have been blacklisted from this group by the administration. Re-entry protocols are permanently locked."
       extraContent={
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     ...T.labelXs,
     fontSize: 10,
     color: '#ba1a1a',
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 1,
   },
   bannedNoticeText: {

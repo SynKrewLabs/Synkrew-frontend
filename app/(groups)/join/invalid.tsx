@@ -1,23 +1,23 @@
 /**
- * SynKrew — Join Group: Invalid Invite Token (Terminal State)
+ * SynKrew — Join Group: Invalid Invite (Terminal State)
  * Route: app/(groups)/join/invalid.tsx
  */
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { JoinErrorLayout } from '../../../components/groups/JoinErrorLayout';
-import { C, T, BORDER, BORDER_THIN } from '../../../theme/tokens';
+import { C, T, BORDER, BORDER_THIN, S } from '../../../theme/tokens';
 
 export default function JoinGroupInvalidInvite() {
   return (
     <JoinErrorLayout
       testID="join-error-invalid-screen"
-      windowTitle="INVALID_TOKEN.EXE"
+      windowTitle="INVALID_INVITE.EXE"
       titleBarColor="pink"
       iconText="🚫"
-      badgeLabel="STATUS CODE: 400"
-      headline="ERROR: INVALID_INVITE_TOKEN"
-      description="The group invitation link you attempted to use is malformed, expired, or corrupted. The arcade machine rejected your token."
+      badgeLabel="STATUS: 404_NOT_FOUND"
+      headline="INVALID INVITATION LINK"
+      description="The invitation code is corrupted, mistyped, or does not exist on the network. Check the link or ask the Krew creator for a fresh invite."
       extraContent={
         <View style={styles.errorStripesBox}>
           <View style={styles.errorIconBlock}>
@@ -28,14 +28,14 @@ export default function JoinGroupInvalidInvite() {
           </View>
         </View>
       }
-      primaryActionLabel="RETURN TO DASHBOARD"
+      primaryActionLabel="RETURN TO GROUPS"
     />
   );
 }
 
 const styles = StyleSheet.create({
   errorStripesBox: {
-    height: 36,
+    height: 38,
     borderWidth: BORDER,
     borderColor: C.black,
     backgroundColor: C.surface,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   errorIconBlock: {
-    width: 36,
+    width: 38,
     height: '100%',
     backgroundColor: C.error,
     borderRightWidth: BORDER,
@@ -59,16 +59,16 @@ const styles = StyleSheet.create({
   },
   errorStripesFill: {
     flex: 1,
-    paddingHorizontal: 8,
+    paddingHorizontal: S.sm,
     backgroundColor: C.surfaceVariant,
     height: '100%',
     justifyContent: 'center',
   },
   errorStripesText: {
     ...T.labelXs,
-    fontSize: 9,
+    fontSize: 10,
     color: '#ba1a1a',
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 1,
   },
 });

@@ -25,6 +25,8 @@ export default function GroupsLayout() {
       <Stack.Screen name="create/limit-reached" />
       <Stack.Screen name="create/confirmation" />
       <Stack.Screen name="create/failed" />
+      <Stack.Screen name="define-tasks" />
+      <Stack.Screen name="schedule-tasks" />
       <Stack.Screen name="join" />
       <Stack.Screen name="join/invalid" />
       <Stack.Screen name="join/expired" />
@@ -38,6 +40,7 @@ export default function GroupsLayout() {
       <Stack.Screen name="league" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="settings/tasks" />
+      <Stack.Screen name="settings/schedule" />
       <Stack.Screen name="settings/transfer" />
       <Stack.Screen name="settings/delete" />
     </Stack>

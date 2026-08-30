@@ -1,4 +1,10 @@
-# SynKrew — Frontend UX Plan (v1.3)
+# SynKrew — Frontend UX Plan (v1.6)
+
+**Update from v1.5**: Schedule Tasks UI mechanic changed from a 7-day × task **checkbox grid** to a **stacked list of 7 day rows, each with a dropdown**. Tapping a day's dropdown opens a multi-select checklist of the user's tasks (checkbox per task inside the dropdown); the collapsed dropdown shows a summary of what's checked for that day. The underlying rule is unchanged — every day must have at least one task checked, blocked otherwise. This is a visual/interaction change only; the shared-screen model (one Schedule Tasks screen reused by Create Group and Join Group) and the `task_schedules` data model are unaffected.
+
+**Update from v1.4**: confirmed Create Group and Join Group use the **literal same two screens** for task definition and scheduling — not parallel designs that happen to match, but one reused Define Tasks screen and one reused Schedule Tasks screen (§2.2, §2.3). The only screens unique to Join Group are Invite Preview (+ its edge states) and Confirmation; everything from "define your tasks" onward is identical regardless of entry path. This removes any need to design or build a separate "Join Group: Define Tasks" or "Join Group: Schedule Tasks" screen — see the updated flow diagram in §2.3.
+
+**Update from v1.3**: task definitions are no longer group-wide/creator-only — every member (including the creator) defines their **own** 3 tasks when they create or join a group (§2.2, §2.3). Tasks are visible to the whole group (needed for verification trust, since a verifier judges proof against a task they didn't define). A new **Schedule Tasks** step follows task definition for every user — a per-weekday checkbox grid assigning any subset of their 3 tasks to each day, with a rule that every day must have at least one task checked (§2.2, §2.3, §2.13a). This changes the ERD's implied `task_definitions` scope from group-level to member-level, and introduces a new `task_schedules` join concept (task × weekday) sitting between `task_definitions` and `task_instances`. Verification (§2.5) now needs a task-owner label per card since proof is checked against an individually-authored task, not a shared one.
 
 **Update from v1.2**: folded in the coin-economy breakdown doc — added explicit Win Share transaction labeling and full economy flow diagram (§2.9), a Free-vs-Premium comparison table with the "capacity upgrade, not economy upgrade" principle (§2.10), and the League separation principle plus a proposed (unconfirmed) points formula (§2.8, §15).
 
@@ -6,7 +12,7 @@
 
 **Update from v1**: staking model changed from a flat coin amount locked for the whole cycle to a **creator-set percentage recalculated daily off each member's current balance** (see §2.9a). This affects Create Group (§2.2), Wallet (§2.9), and Settlement (§2.6). Several open questions this introduces are called out in §15 and are not yet resolved.
 
-Scope: frontend only. Backend/API contracts owned separately — this plan assumes the data shapes from the existing ERD (groups, group_memberships, task_definitions, task_instances, verifications, transactions, base_period_cycles, subscription_plans).
+Scope: frontend only. Backend/API contracts owned separately — this plan assumes the data shapes from the existing ERD (groups, group_memberships, task_definitions, task_instances, verifications, transactions, base_period_cycles, subscription_plans), **with one assumed schema change from v1.4**: `task_definitions` moves from group-scoped to member-scoped (keyed off `group_membership_id`, not just `group_id`), and a new `task_schedules` join (task_definition × weekday) sits between `task_definitions` and `task_instances` to drive daily instance generation. Not yet confirmed against an updated ERD — flag as a backend dependency (see §15).
 
 Visual direction: retro 90s/Y2K desktop UI — chunky window title bars, pixel-ish icons, grid background, sparkle accents. Palette: pink, teal, purple, yellow. No mascot/gacha/character system — gamification is streaks, badges, and league rank only.
 
@@ -58,22 +64,33 @@ The number communicates "3 people are waiting on you," which is meant to create 
 
 ### 2.2 Create Group
 1. Name + description
-2. Add task definitions (title, repeat pattern) — at least 1 required; supports multiple tasks/day (see §5)
-3. Set base period length (7 / 30 days) and **stake percentage** per day (creator picks a %, e.g. 60% — see §2.9a for how this applies daily). Slider or preset chips (25/50/60/75%) recommended over free text, to keep values sane and avoid a 0% or 100% edge case slipping through unconfirmed (see §15).
-4. Invite members (contact picker / shareable link)
-5. Review screen: member cap for current tier (10 free / 20 premium), groups-joined count vs. limit
+2. **Define Tasks** *(shared screen — see reuse note below)* — the creator adds exactly 3 personal task definitions (title, repeat pattern). Not group-wide: this is the creator's own task set. At least 1 required to proceed; blocked state if none added yet.
+3. **Schedule Tasks** *(shared screen — see reuse note below)* — a stacked list of 7 day rows (Mon–Sun), each with a dropdown; tapping a day's dropdown opens a multi-select checklist of the creator's 3 tasks (checkbox per task). Any subset can be checked per day, including all 3; multiple tasks can land on the same day. Every day must have at least one task checked — a day left at zero is a blocked state, same pattern as step 2's "no tasks added."
+4. Set base period length (7 / 30 days) and **stake percentage** per day (creator picks a %, e.g. 60% — see §2.9a for how this applies daily). Slider or preset chips (25/50/60/75%) recommended over free text, to keep values sane and avoid a 0% or 100% edge case slipping through unconfirmed (see §15).
+5. Invite members (contact picker / shareable link)
+6. Review screen: member cap for current tier (10 free / 20 premium), groups-joined count vs. limit
    - At group-limit (2 free / 5 premium): block creation, show upsell instead of review
-6. Confirmation → lands in new Group Detail
+7. Confirmation → lands in new Group Detail
 
 ### 2.3 Join Group
 The other half of growth — a first-class flow, not an afterthought.
-1. Entry: invite link or code (deep link opens app directly to preview)
-2. Group preview: name, creator, member count/cap, task + stake summary, group rules
-3. Accept / Decline
-4. Client-side check against user's group-count limit before allowing Accept
-5. Join confirmation → lands in Group Detail
+1. **Invite Preview** *(unique to Join Group)*: name, creator, member count/cap, **stake % and cycle length** (not a task summary — there's no shared task list to preview since tasks are per-member), group rules
+2. **Accept / Decline** *(unique to Join Group)* — client-side check against user's group-count limit before allowing Accept
+3. **Define Tasks** *(the exact same screen as Create Group step 2 — not a lookalike, the literally same component)* — joining member adds their own 3 personal task definitions. At least 1 required; blocked state if none added yet.
+4. **Schedule Tasks** *(the exact same screen as Create Group step 3)* — same dropdown-per-day mechanic, same day-must-have-≥1-task rule.
+5. **Confirmation** *(unique to Join Group)* → lands in Group Detail, where the member can now see every other member's tasks (group-wide visibility, see §2.5)
 
-**Edge states**: invalid invite, expired invite, group full, already a member, user removed/banned from this group previously, private group (requires creator approval), invite revoked after link was opened.
+**Reuse note — read before building or designing anything for Join Group's task steps**: Create Group and Join Group do **not** get separate Define Tasks / Schedule Tasks screens. There is exactly one Define Tasks screen and one Schedule Tasks screen in the whole app, entered from two different places in the navigation flow:
+
+```
+CREATE GROUP:  Name/Description → [Define Tasks] → [Schedule Tasks] → Cycle/Stake % → Invite → Review → Confirmation
+
+JOIN GROUP:    Invite Preview → Accept/Decline → [Define Tasks] → [Schedule Tasks] → Confirmation
+```
+
+Only the screens outside the brackets are unique per flow. Anything designed, built, or QA'd for the bracketed steps applies identically to both entry paths — a fix or change to Define Tasks/Schedule Tasks never needs to be made twice.
+
+**Edge states**: invalid invite, expired invite, group full, already a member, user removed/banned from this group previously, private group (requires creator approval), invite revoked after link was opened, plus the shared task-definition and scheduling blocked states described in §2.2 steps 2–3.
 
 ### 2.4 Daily Task Submission
 1. Home/Group Detail surfaces a "Today's Task" card per active task with countdown to cutoff (11:59 PM group timezone)
@@ -95,7 +112,7 @@ Own bottom-nav tab — not nested under Groups. Aggregates pending proofs across
 
 | Phase | What happens |
 |---|---|
-| **Card appears (0s)** | Proof image is the visual focus, full-bleed on the card. Submitter, group name, timestamp/location chip shown as secondary info. Circular dwell-timer ring begins filling around a corner or edge of the card. Swipe has no effect yet. Optional subtle label, e.g. `REVIEWING...` |
+| **Card appears (0s)** | Proof image is the visual focus, full-bleed on the card. Submitter, group name, **task name (which of the submitter's 3 tasks this is — required now that tasks are per-member, not shared)**, timestamp/location chip shown as secondary info. Circular dwell-timer ring begins filling around a corner or edge of the card. Swipe has no effect yet. Optional subtle label, e.g. `REVIEWING...` |
 | **0–5s (dwell window)** | Card is inert to swipe input — a light resistance or dimmed-affordance treatment communicates "not yet," not "broken." This is the anti-collusion mechanic (see rationale below), so it should read as "take a look," not "you are being timed." |
 | **5s (dwell complete)** | Ring completes. Approve/Reject affordances activate (color brightens, subtle card lift/scale). A small haptic tick confirms the card is now live. |
 | **Swipe right → Approve** | Card exits with an `APPROVE ✓` stamp/animation, sparkle burst consistent with the visual language, next card loads immediately with its own fresh timer. |
@@ -247,11 +264,17 @@ v1 decisions to reflect in UI (flag any not yet backend-confirmed):
 *(Marked open pending backend confirmation — see §13.)*
 
 ### 2.13 Task Definition Management
-- Add/edit/delete a task definition (creator-only)
+- Add/edit/delete a task definition — **member-scoped, not creator-only**: each member (creator included) manages their own 3 tasks; a member cannot edit another member's tasks even though they can see them (§2.2 note)
+- Cannot delete a task down to zero — every member must have at least 1 active task at all times (blocked state, mirrors the "no tasks added" rule at creation/join)
 - Pause a task without deleting it (stops generating new instances, keeps history)
 - Change repeat pattern
-- Groups support multiple active tasks per day — each gets its own status card and vote queue entry
+- Groups support multiple active tasks per day per member — each gets its own status card and vote queue entry
 - Editing a task definition does not retroactively change already-generated `task_instances`
+
+### 2.13a Task Schedule Management
+- Each member manages their own weekday schedule (the per-day dropdown mechanic from §2.2/§2.3) independently — editing it going forward doesn't retroactively change already-generated `task_instances`
+- Every day must keep at least one task checked; unchecking the last task on a day is a blocked action (explanation, no silent failure)
+- If a task definition is deleted, its schedule entries are removed with it — if that leaves a day at zero, the member must reassign before the deletion completes (or the app auto-falls-back to another of their tasks for that day — flagged as an open UX decision, not yet resolved)
 
 ### 2.14 Task Instance Lifecycle
 Per-task-instance state machine (one instance per active task per member per day). This is the lifecycle a single "Today's Task" card moves through, distinct from the Cycle Lifecycle (§2.12) which governs the whole group's multi-day container.
@@ -406,6 +429,11 @@ Non-obvious concepts (stake, verification, auto-pass, skip day, milestone, leagu
 - **Milestone bonus interaction**: does the 50/75/100% milestone bonus stay a flat pool split evenly across members (original design), or scale with each member's current balance to stay consistent with the percentage model? Blocks final Settlement screen copy (§2.6).
 - **Escalating risk on winning streaks**: since stake is a % of current total, a long winning streak means the *absolute* coins at risk each day keeps growing. Worth confirming this is an intended feature (higher stakes as tension escalates) rather than an unintended side effect, since it changes the emotional arc of a long streak from "safe lead" to "growing exposure."
 - **Stake % bounds**: should the creator's stake percentage be constrained to a sane range (e.g. 10–75%) rather than free-entry, to prevent a 0% (no real stake) or 100% (one loss wipes the member out) group from being created accidentally?
+
+**Per-member tasks + scheduling (§2.2/§2.3/§2.13a) — newly introduced, needs resolution before build:**
+- Updated ERD confirmation: `task_definitions` as member-scoped and a new `task_schedules` table are assumed here but not yet reflected in the backend schema — needs sign-off before frontend data contracts are finalized
+- Deleting a task that leaves a scheduled day at zero: block the deletion until reassigned, or auto-fallback to another of the member's tasks for that day? Not yet decided (§2.13a)
+- Whether members can edit their task list/schedule mid-cycle at all, or only between cycles — affects whether §2.13/§2.13a are always-available screens or locked during an active cycle
 
 ---
 

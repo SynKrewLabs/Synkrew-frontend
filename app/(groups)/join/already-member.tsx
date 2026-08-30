@@ -7,11 +7,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { JoinErrorLayout } from '../../../components/groups/JoinErrorLayout';
-import { C, T, BORDER, BORDER_THIN, S } from '../../../theme/tokens';
+import { C, T, BORDER_THIN, S } from '../../../theme/tokens';
 
 export default function JoinGroupAlreadyMember() {
   const params = useLocalSearchParams();
-  const groupName = params.name ? String(params.name) : 'MORNING RUNNERS';
+  const groupName = params.name ? String(params.name) : 'NEON RUNNERS';
 
   const handleGoToGroup = () => {
     router.replace({
@@ -23,17 +23,17 @@ export default function JoinGroupAlreadyMember() {
   return (
     <JoinErrorLayout
       testID="join-error-already-member-screen"
-      windowTitle="ALREADY_SYNCED.EXE"
+      windowTitle="ALREADY_MEMBER.EXE"
       titleBarColor="mint"
       iconText="👤"
-      badgeLabel="STATUS: ALREADY_ENROLLED"
+      badgeLabel="STATUS: ALREADY ENROLLED"
       headline="IDENTITY REGISTERED"
       description={`You are already an active participant in "${groupName.toUpperCase()}". Your stake and streak are currently active in this circle.`}
       extraContent={
         <View style={styles.activeStatusBox}>
           <Text style={styles.activeStatusTitle}>CURRENT ENROLLMENT: ACTIVE</Text>
           <Text style={styles.activeStatusText}>
-            No additional handshake required. Head over to the group dashboard to view today's mission.
+            No additional handshake required. Head over to the group dashboard to view today's mission and pending verifications.
           </Text>
         </View>
       }
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     ...T.labelXs,
     fontSize: 10,
     color: '#00513a',
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 1,
   },
   activeStatusText: {

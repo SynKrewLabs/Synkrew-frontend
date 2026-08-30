@@ -1,11 +1,12 @@
 /**
- * SynKrew — Join Group: Success Confirmation Screen
+ * SynKrew — Join Group: Success Confirmation
  * Route: app/(groups)/join/confirmation.tsx
  *
  * Implements:
- *   - Success handshake and verified enrollment badges
- *   - Vault stake lock confirmation
- *   - Direct progression to Group Detail
+ *   - Success handshake graphic & security badges matching Create Group Confirmation pattern
+ *   - Mission parameter confirmation (stake secured, sync protocol active)
+ *   - "ENTER GROUP DASHBOARD" CTA: Hands off data to active Group Detail screen
+ *   - "Return to All Groups" secondary link
  */
 
 import React from 'react';
@@ -39,11 +40,19 @@ export default function JoinGroupConfirmation() {
   const params = useLocalSearchParams();
 
   const groupName = params.name ? String(params.name) : 'NEON RUNNERS';
+  const memberCount = params.members ? String(params.members) : '5 MEMBERS';
+  const stakePercent = params.stakePercent ? String(params.stakePercent) : '60%';
 
-  const handleEnterGroup = () => {
+  const handleGoToGroup = () => {
+    // Navigate to active Group Detail with newly joined group parameters
     router.replace({
       pathname: '/(groups)/detail',
-      params: { name: groupName },
+      params: {
+        name: groupName,
+        members: memberCount,
+        stake: stakePercent,
+        isNew: 'true',
+      },
     });
   };
 
@@ -55,62 +64,76 @@ export default function JoinGroupConfirmation() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.card, hardShadow(SHADOW_OFFSET), { width: cardWidth }]}>
-          <TitleBar label="INVITE_ACCEPTED.EXE" color="mint" />
+          <TitleBar label="PACT_JOINED.EXE" color="mint" />
 
           <View style={styles.body}>
-            {/* Graphic Badge */}
+            {/* Success Graphic Frame (Matches Create Group Confirmation) */}
             <View style={styles.graphicContainer}>
               <View style={styles.graphicShadow} />
               <View style={styles.graphicBox}>
-                <Text style={styles.graphicIcon}>🎉</Text>
+                <Text style={styles.graphicIcon}>🤝</Text>
               </View>
-              <View style={styles.badgeCheck}>
-                <Text style={styles.badgeCheckText}>✓</Text>
+              <View style={styles.verifiedCheckBadge}>
+                <Text style={styles.verifiedCheckText}>✓</Text>
               </View>
             </View>
 
             {/* Headline */}
             <View style={styles.textBlock}>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusBadgeText}>ENROLLMENT COMPLETE</Text>
-              </View>
-              <Text style={styles.headline}>WELCOME TO THE KREW</Text>
+              <Text style={styles.headline}>PACT_JOINED</Text>
               <Text style={styles.subtitle}>
-                You have successfully joined <Text style={{ fontWeight: '800', color: C.black }}>"{groupName.toUpperCase()}"</Text>. Your stake has been locked into the collective accountability vault.
+                You have successfully joined <Text style={{ fontWeight: '900', color: C.black }}>"{groupName.toUpperCase()}"</Text>. Your daily routines are scheduled, and your stake is locked into the vault.
               </Text>
             </View>
 
-            {/* Parameter breakdown */}
-            <View style={[styles.detailsBox, hardShadow(SHADOW_OFFSET_SM)]}>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>SYNCHRONIZATION</Text>
-                <Text style={styles.detailValue}>ONLINE (DAY 1)</Text>
+            {/* Stats Badges */}
+            <View style={styles.badgesRow}>
+              <View style={[styles.badgeItem, { backgroundColor: C.secondaryContainer }, hardShadow(1)]}>
+                <Text style={styles.badgeIcon}>👥</Text>
+                <Text style={styles.badgeLabel}>SQUAD: ACTIVE</Text>
               </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>STAKE SECURED</Text>
-                <Text style={styles.detailValue}>50 SYNCOINS</Text>
+
+              <View style={[styles.badgeItem, { backgroundColor: C.pink }, hardShadow(1)]}>
+                <Text style={styles.badgeIcon}>🔒</Text>
+                <Text style={styles.badgeLabel}>STATUS: SECURE</Text>
               </View>
             </View>
 
-            {/* Action */}
+            {/* Summary Details Box */}
+            <View style={[styles.summaryBox, hardShadow(SHADOW_OFFSET_SM)]}>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryLabel}>SYNC PROTOCOL</Text>
+                <Text style={styles.summaryVal}>DAY 1 INITIALIZED</Text>
+              </View>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryLabel}>DAILY COMMITMENT</Text>
+                <Text style={styles.summaryVal}>{stakePercent} STAKE RISK</Text>
+              </View>
+              <View style={styles.summaryItem}>
+                <Text style={styles.summaryLabel}>GROUP VISIBILITY</Text>
+                <Text style={styles.summaryVal}>ALL MEMBERS ACTIVE</Text>
+              </View>
+            </View>
+
+            {/* Actions */}
             <View style={styles.actionColumn}>
               <Pressable
-                testID="join-confirm-btn-enter"
-                style={[styles.enterBtn, hardShadow(SHADOW_OFFSET_SM)]}
-                onPress={handleEnterGroup}
+                testID="confirmation-btn-go-to-group"
+                style={[styles.primaryBtn, hardShadow(SHADOW_OFFSET_SM)]}
+                onPress={handleGoToGroup}
                 accessibilityRole="button"
               >
-                <Text style={styles.enterBtnIcon}>🚀</Text>
-                <Text style={styles.enterBtnText}>ENTER GROUP DASHBOARD</Text>
+                <Text style={styles.primaryBtnIcon}>🚀</Text>
+                <Text style={styles.primaryBtnText}>ENTER GROUP DASHBOARD</Text>
               </Pressable>
 
               <Pressable
-                testID="join-confirm-btn-dashboard"
-                style={styles.returnBtn}
+                testID="confirmation-btn-dashboard"
+                style={styles.secondaryBtn}
                 onPress={() => router.replace('/(groups)')}
                 accessibilityRole="button"
               >
-                <Text style={styles.returnBtnText}>← Return to All Groups</Text>
+                <Text style={styles.secondaryBtnText}>← Return to All Groups</Text>
               </Pressable>
             </View>
           </View>
@@ -143,6 +166,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  // Graphic Frame
   graphicContainer: {
     position: 'relative',
     marginVertical: S.xs,
@@ -153,13 +177,13 @@ const styles = StyleSheet.create({
     left: 4,
     right: -4,
     bottom: -4,
-    backgroundColor: C.mint,
+    backgroundColor: C.pink,
     borderWidth: BORDER_HEAVY,
     borderColor: C.black,
   },
   graphicBox: {
-    width: 90,
-    height: 90,
+    width: 96,
+    height: 96,
     backgroundColor: C.surfaceContainerHigh,
     borderWidth: BORDER_HEAVY,
     borderColor: C.black,
@@ -167,22 +191,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   graphicIcon: {
-    fontSize: 44,
+    fontSize: 48,
   },
-  badgeCheck: {
+  verifiedCheckBadge: {
     position: 'absolute',
     bottom: -6,
     right: -6,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: C.pink,
+    backgroundColor: C.mint,
     borderWidth: BORDER_THIN,
     borderColor: C.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badgeCheckText: {
+  verifiedCheckText: {
     fontSize: 16,
     fontWeight: '900',
     color: C.black,
@@ -192,25 +216,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  statusBadge: {
-    backgroundColor: C.secondaryContainer,
-    borderWidth: BORDER_THIN,
-    borderColor: C.black,
-    paddingHorizontal: S.sm,
-    paddingVertical: 3,
-  },
-  statusBadgeText: {
-    ...T.labelXs,
-    color: '#00513a',
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
   headline: {
     ...T.headlineMd,
-    fontSize: 22,
+    fontSize: 24,
     color: C.primary,
     fontWeight: '900',
-    textAlign: 'center',
     textTransform: 'uppercase',
   },
   subtitle: {
@@ -218,10 +228,35 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: C.onSurfaceVariant,
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 19,
   },
 
-  detailsBox: {
+  // Badges
+  badgesRow: {
+    flexDirection: 'row',
+    gap: S.sm,
+  },
+  badgeItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: S.sm,
+    paddingVertical: 6,
+    borderWidth: BORDER,
+    borderColor: C.black,
+  },
+  badgeIcon: {
+    fontSize: 14,
+  },
+  badgeLabel: {
+    ...T.labelSm,
+    fontSize: 11,
+    color: C.black,
+    fontWeight: '800',
+  },
+
+  // Summary box
+  summaryBox: {
     width: '100%',
     backgroundColor: C.surfaceContainerLow,
     borderWidth: BORDER,
@@ -229,29 +264,30 @@ const styles = StyleSheet.create({
     padding: S.md,
     gap: S.xs,
   },
-  detailRow: {
+  summaryItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  detailLabel: {
+  summaryLabel: {
     ...T.labelXs,
     fontSize: 10,
     color: C.onSurfaceVariant,
     fontWeight: '800',
   },
-  detailValue: {
+  summaryVal: {
     ...T.labelSm,
     fontSize: 11,
     color: C.black,
     fontWeight: '800',
   },
 
+  // Actions
   actionColumn: {
     width: '100%',
     gap: S.sm,
   },
-  enterBtn: {
+  primaryBtn: {
     width: '100%',
     height: 52,
     backgroundColor: C.pink,
@@ -262,26 +298,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  enterBtnIcon: {
+  primaryBtnIcon: {
     fontSize: 18,
   },
-  enterBtnText: {
+  primaryBtnText: {
     ...T.label,
     fontSize: 13,
     color: C.black,
     fontWeight: '900',
     letterSpacing: 1.5,
   },
-  returnBtn: {
+  secondaryBtn: {
     width: '100%',
     paddingVertical: S.xs,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  returnBtnText: {
+  secondaryBtnText: {
     ...T.labelSm,
-    color: C.onSurfaceVariant,
     fontSize: 12,
+    color: C.onSurfaceVariant,
+    textDecorationLine: 'underline',
     fontWeight: '700',
   },
 });

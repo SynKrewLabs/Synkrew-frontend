@@ -51,8 +51,8 @@ export default function CreateGroupStep1() {
     }
     setErrorMessage(null);
     router.push({
-      pathname: '/(groups)/create/step-2',
-      params: { name: groupName.trim(), description: description.trim() },
+      pathname: '/(groups)/define-tasks',
+      params: { mode: 'create', name: groupName.trim(), description: description.trim() },
     });
   };
 

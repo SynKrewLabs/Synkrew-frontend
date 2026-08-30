@@ -6,27 +6,27 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { JoinErrorLayout } from '../../../components/groups/JoinErrorLayout';
-import { C, T, BORDER, BORDER_THIN, S } from '../../../theme/tokens';
+import { C, T, BORDER_THIN, S } from '../../../theme/tokens';
 
 export default function JoinGroupExpiredInvite() {
   return (
     <JoinErrorLayout
       testID="join-error-expired-screen"
-      windowTitle="TIME_EXPIRED.EXE"
+      windowTitle="EXPIRED_INVITE.EXE"
       titleBarColor="pink"
       iconText="⏳"
-      badgeLabel="TTL_EXPIRED: 48H LIMIT"
-      headline="ERROR: INVITE_EXPIRED"
-      description="The space-time continuum has rejected your entry ticket. For security protocols, all Krew invitation links automatically self-destruct after 48 hours."
+      badgeLabel="TTL_EXPIRED: 48-HOUR LIMIT"
+      headline="INVITATION EXPIRED"
+      description="This invitation link has passed its 48-hour security window. For group integrity, stale invitation tokens are automatically decommissioned."
       extraContent={
         <View style={styles.expiredNoticeBox}>
           <Text style={styles.expiredNoticeTitle}>NEXT STEPS</Text>
           <Text style={styles.expiredNoticeText}>
-            Please request a fresh invitation link from your group administrator to initiate a new connection handshake.
+            Request a fresh invitation link from the group administrator to initiate a new connection handshake.
           </Text>
         </View>
       }
-      primaryActionLabel="RETURN TO DASHBOARD"
+      primaryActionLabel="RETURN TO GROUPS"
     />
   );
 }
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     ...T.labelXs,
     fontSize: 10,
     color: '#00513a',
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 1,
   },
   expiredNoticeText: {

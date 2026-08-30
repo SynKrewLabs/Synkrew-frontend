@@ -1,6 +1,10 @@
-# SynKrew — Screens Checklist
+# SynKrew — Screens Checklist (v1.2)
 
 Use this to track design (Stitch) and build (Expo) status per screen. Check off as each is: designed in Stitch → matches locked design system → built in Expo → uses shared components (no one-off styling).
+
+**Update from v1.1**: confirmed Define Tasks and Schedule Tasks are shared screens (one design, reused by both Create Group and Join Group) — removed the duplicate Join Group entries and checked off the 4 shared task-definition/scheduling items using their confirmed Stitch screen IDs. Join Group's remaining checklist now only covers what's unique to it: Invite Preview, its edge states, and Confirmation.
+
+**Update from v1**: tasks are now per-member (creator + every joining member define their own 3 tasks, visible group-wide), with a new weekday-scheduling step after task definition. New items below are unchecked (`[ ]`) since they weren't part of the original design pass — everything previously checked off under the old shared-task model should be re-verified against the new flow before re-marking complete, particularly Join Group's Invite Preview/Confirmation and Task Definition Management.
 
 Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if tracking design/build separately.
 
@@ -48,8 +52,10 @@ Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if
 - [x] Groups List — offline (cached + banner)
 - [x] Create Group — Step 1: Name & Description
 - [x] Create Group — Step 1: validation error
-- [x] Create Group — Step 2: Task Definitions
-- [x] Create Group — Step 2: no tasks added (blocked state)
+- [x] Define Tasks — shared screen, used by both Create Group & Join Group (Stitch ID: `e7a34275bf7b43a0a8621a1c581832cf` — supersedes deprecated `d03d65694c3b4a129e6663de8c6795c9`)
+- [x] Define Tasks — no tasks added (blocked state) (Stitch ID: `01c9eb3fdaab43fe95955c8a2c6b1a7d` — supersedes deprecated `6c56a2d359e54d37be3040a31ee5b289`)
+- [x] Schedule Tasks (Dropdown) — shared screen (Stitch ID: `8c9aef810d83493b93ea9d818fbd9a66` — supersedes deprecated grid-based `1752c2d64f31404fb3a80db118bf3e46`)
+- [x] Schedule Tasks (Dropdown) — day with zero tasks checked (blocked state) (Stitch ID: `1cef2fef30d643f586b36d212837e39f` — supersedes deprecated grid-based `dec9e28b99a2464f815d6c9f92ae79fb`)
 - [x] Create Group — Step 3: Cycle Length & Stake %
 - [x] Create Group — Step 4: Invite Members
 - [x] Create Group — Step 4: contact permission denied
@@ -57,7 +63,7 @@ Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if
 - [x] Create Group — Step 5: at group-limit (redirect to Upsell)
 - [x] Create Group — Confirmation / success
 - [x] Create Group — creation failed (retry)
-- [x] Join Group — Invite Preview
+- [x] Join Group — Invite Preview (RE-VERIFIED: shows stake %/cycle length, no task summary — tasks are per-member)
 - [x] Join Group — invalid invite
 - [x] Join Group — expired invite
 - [x] Join Group — group full
@@ -65,7 +71,10 @@ Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if
 - [x] Join Group — previously removed/banned
 - [x] Join Group — private/pending-approval
 - [x] Join Group — invite revoked
-- [x] Join Group — Confirmation
+- [x] Join Group — Confirmation (RE-VERIFIED: lands in Group Detail showing all members' tasks)
+
+**Note**: Join Group does NOT get its own Define Tasks / Schedule Tasks screens — it reuses the two shared items checked off above, entered after Accept/Decline instead of after Name/Description. Nothing to design or build twice.
+
 - [x] Group Detail — active
 - [x] Group Detail — paused
 - [x] Group Detail — archived (read-only)
@@ -73,8 +82,11 @@ Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if
 - [x] Group Settings / Lifecycle Management
 - [x] Group Settings — transfer ownership confirmation
 - [x] Group Settings — delete confirmation
-- [x] Task Definition Management
-- [x] Task Definition — cannot delete last task (blocked)
+- [x] Task Definition Management (RE-VERIFIED: member-scoped, not creator-only) (Stitch ID: `e7ab28fb58fd4e4ca1a4deb14f52ee50`)
+- [x] Task Definition — cannot delete last task (blocked) (Stubbed with ErrorBanner)
+- [x] Task Schedule Management (Redesign — companion 7-day dropdown, editable post-join) (Stitch ID: `7b28fd10253443e3a5943b1256c2b96a`)
+- [x] Task Schedule Management — cannot uncheck last task on a day (blocked) (Stubbed with ErrorBanner)
+- [x] Task Schedule Management — deleting a task leaves a day at zero (blocked/reassign) (Stubbed with ErrorBanner)
 
 ## 3. Daily Task Submission
 - [x] Today's Task — Not started
@@ -95,7 +107,7 @@ Legend: `[ ]` not started · mark with an `x` as you go, or duplicate columns if
 - [x] Offline capture / queued state
 
 ## 4. Verification (signature interaction)
-- [x] Card stack — card appears / dwell locked (0–5s)
+- [ ] Card stack — card appears / dwell locked (0–5s) (RE-VERIFY: add task-owner/task-name label — tasks are per-member now)
 - [x] Card stack — dwell complete / active
 - [x] Card stack — approve (swipe/button)
 - [x] Card stack — reject → reason sheet
@@ -184,4 +196,5 @@ Check each against the locked reference screens (Onboarding: Verify Each Other, 
 - [x] Error states all use the shared `ErrorBanner` pattern
 - [x] Status badges (task states) all use distinct color + icon, not color alone
 
-**Total: 31 primary screens · 63 fallback/edge states · 94 items to design + build**
+**Total: 33 primary screens · 64 fallback/edge states · 97 items to design + build**
+**(4 shared task-definition/scheduling items confirmed done via Stitch IDs; Join Group Invite Preview/Confirmation and Task Definition Management flagged for re-verification — see changelog note at top)**
