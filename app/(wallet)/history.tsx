@@ -188,21 +188,38 @@ const TX_CONFIG: Record<TxType, {
 // ─── Filter groups ─────────────────────────────────────────────────────────────
 const FILTER_GROUPS = ['All Groups', 'Morning Runners', 'Code Grind'];
 
-export default function TransactionHistory() {
+import { useTransactionHistoryQuery } from '../../hooks/queries/useWallet';
+
+export default function TransactionHistoryScreen() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 448);
+
+  const { data: historyData } = useTransactionHistoryQuery();
 
   const [listState, setListState] = useState<ListState>('list');
   const [activeFilter, setActiveFilter] = useState('All Groups');
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
 
-  const filteredTx = listState === 'filtered'
-    ? []
-    : listState === 'empty'
+  const rawTxList: Transaction[] = historyData?.transactions && historyData.transactions.length > 0
+    ? historyData.transactions.map(t => ({
+        id: t.id,
+        type: t.type as TxType,
+        amount: t.amount,
+        status: t.settlementStatus as TxStatus,
+        groupName: t.groupName || 'Neon Runners',
+        taskName: t.description,
+        timestamp: t.createdAt,
+        dateLabel: 'Today',
+        stakeBasis: { percent: 60, balanceBefore: 120 },
+        winShareFrom: t.type === 'win_share' ? { memberCount: 1 } : undefined,
+      }))
+    : MOCK_TRANSACTIONS;
+
+  const transactions = listState === 'empty'
     ? []
     : activeFilter === 'All Groups'
-    ? MOCK_TRANSACTIONS
-    : MOCK_TRANSACTIONS.filter(tx => tx.groupName === activeFilter);
+    ? rawTxList
+    : rawTxList.filter(tx => tx.groupName === activeFilter);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
@@ -302,7 +319,7 @@ export default function TransactionHistory() {
           {/* ═══ TRANSACTION LIST ═══ */}
           {listState === 'list' && (
             <>
-              {filteredTx.map((tx) => {
+              {transactions.map((tx) => {
                 const cfg = TX_CONFIG[tx.type];
                 return (
                   <Pressable

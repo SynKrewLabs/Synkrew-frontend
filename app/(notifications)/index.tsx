@@ -29,6 +29,7 @@ import {
 import { TitleBar } from '../../components/ui/TitleBar';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
+import { useNotificationsQuery, useMarkNotificationReadMutation } from '../../hooks/queries/useNotifications';
 
 interface NotificationItem {
   id: string;
@@ -41,72 +42,40 @@ interface NotificationItem {
   route?: string;
 }
 
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    title: 'Verification Needed',
-    desc: 'Identity protocol requires manual override. 3 pending proofs in your queue.',
-    time: '10:42 AM',
-    icon: '🛡️',
-    color: C.pink,
-    read: false,
-    route: '/(verify)',
-  },
-  {
-    id: '2',
-    title: 'Settlement Completed',
-    desc: 'Transaction TX-9842 successfully cleared. Daily pass coins credited.',
-    time: 'YESTERDAY',
-    icon: '💰',
-    color: C.mint,
-    read: false,
-    route: '/(settlement)/daily-summary',
-  },
-  {
-    id: '3',
-    title: 'Milestone Reached',
-    desc: 'Level 5 connectivity achieved in sector 7G. Bonus unlocked.',
-    time: 'MON',
-    icon: '🏆',
-    color: C.cyan,
-    read: false,
-    route: '/(settlement)/milestone',
-  },
-  {
-    id: '4',
-    title: 'Invite Received',
-    desc: 'New squad operation pending your approval. Join the Alpha cycle.',
-    time: 'OCT 12',
-    icon: '✉️',
-    color: C.yellow,
-    read: false,
-    route: '/(groups)/join',
-  },
-  {
-    id: '5',
-    title: 'System Update',
-    desc: 'Core system algorithms updated to V2.4.1.',
-    time: 'OCT 10',
-    icon: 'ℹ️',
-    color: C.surfaceContainerHigh,
-    read: true,
-  },
-];
-
 export default function NotificationInboxScreen() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 480);
 
+  const { data: serverNotifs } = useNotificationsQuery();
+  const markReadMutation = useMarkNotificationReadMutation();
+
   const [showPushBanner, setShowPushBanner] = useState(true);
-  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isEmptyState, setIsEmptyState] = useState(false);
+
+  React.useEffect(() => {
+    if (serverNotifs && serverNotifs.length > 0) {
+      setNotifications(
+        serverNotifs.map(n => ({
+          id: n.id,
+          title: n.title,
+          desc: n.body,
+          time: 'Today',
+          icon: n.type === 'verification_needed' ? '🛡️' : n.type === 'proof_verified' ? '✓' : '⚡',
+          color: n.type === 'verification_needed' ? C.pink : C.mint,
+          read: n.isRead,
+          route: n.deepLinkPath,
+        }))
+      );
+    }
+  }, [serverNotifs]);
 
   const handleMarkAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   const handleNotificationPress = (item: NotificationItem) => {
-    // Mark as read
+    markReadMutation.mutate(item.id);
     setNotifications((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
     );

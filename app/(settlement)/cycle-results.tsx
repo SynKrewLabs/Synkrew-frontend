@@ -27,6 +27,7 @@ import {
   BORDER, BORDER_THIN, SHADOW_OFFSET, SHADOW_OFFSET_SM,
   hardShadow, gridBgStyle,
 } from '../../theme/tokens';
+import { useCycleResultsQuery } from '../../hooks/queries/useSettlement';
 
 export type CycleResultsRole = 'creator' | 'non_creator' | 'force_closed';
 
@@ -63,17 +64,17 @@ const MOCK_MEMBERS: MemberSummary[] = [
     avatarLetter: 'S',
     avatarBg: C.cyan,
     isCurrentUser: false,
-    daysCompleted: 24,
+    daysCompleted: 22,
     totalDays: 30,
-    passRate: 80,
-    netCoinChange: 210,
+    passRate: 73,
+    netCoinChange: 120,
     streakBest: 14,
   },
   {
     id: 'mike_99',
     name: 'MIKE_99',
     avatarLetter: 'M',
-    avatarBg: C.surfaceDim,
+    avatarBg: C.yellow,
     isCurrentUser: false,
     daysCompleted: 14,
     totalDays: 30,
@@ -87,6 +88,9 @@ export default function CycleResults() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 448);
   const params = useLocalSearchParams();
+
+  const groupId = (params.groupId as string) || 'grp_neon_runners';
+  const { data: cycleResultsData } = useCycleResultsQuery(groupId);
 
   const role = (['creator', 'non_creator', 'force_closed'].includes(String(params.role))
     ? String(params.role)

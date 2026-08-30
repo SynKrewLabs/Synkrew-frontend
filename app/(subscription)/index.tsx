@@ -26,6 +26,7 @@ import {
   gridBgStyle,
 } from '../../theme/tokens';
 import { TitleBar } from '../../components/ui/TitleBar';
+import { useSubscriptionPlansQuery, useUserSubscriptionQuery } from '../../hooks/queries/useSubscription';
 
 interface ComparisonRow {
   feature: string;
@@ -46,6 +47,10 @@ const COMPARISON_DATA: ComparisonRow[] = [
 export default function SubscriptionIndexScreen() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 480);
+
+  const { data: plans } = useSubscriptionPlansQuery();
+  const { data: userSub } = useUserSubscriptionQuery();
+  const isPremium = userSub?.tier === 'premium';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom', 'left', 'right']}>

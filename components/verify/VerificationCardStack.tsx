@@ -44,6 +44,8 @@ import { ErrorBanner } from '../ui/ErrorBanner';
 import { EmptyState } from '../ui/EmptyState';
 import { RejectionReasonSheet } from './RejectionReasonSheet';
 
+import { useVerificationQueueQuery, useSubmitVoteMutation } from '../../hooks/queries/useVerification';
+
 export const DWELL_DURATION_MS = 5000;
 export const SWIPE_THRESHOLD = 120;
 export const EXIT_ANIMATION_MS = 320;
@@ -61,46 +63,6 @@ export interface ProofItem {
   avatarBg: string;
 }
 
-// TODO: replace with real cross-group proof feed
-const INITIAL_PROOFS: ProofItem[] = [
-  {
-    id: 'proof_01',
-    submitterId: 'sarah_x',
-    submitterName: 'SARAH_X',
-    groupName: 'MORNING RUNNERS',
-    taskTitle: '5K OUTDOOR RUN',
-    geoTelemetry: '37.7749° N, 122.4194° W',
-    timestamp: '07:42 AM',
-    votesCurrent: 1,
-    votesRequired: 2,
-    avatarBg: C.cyan,
-  },
-  {
-    id: 'proof_02',
-    submitterId: 'mike_99',
-    submitterName: 'MIKE_99',
-    groupName: 'CODE CRUSHERS',
-    taskTitle: 'LEETCODE HARD #42',
-    geoTelemetry: '40.7128° N, 74.0060° W',
-    timestamp: '08:15 AM',
-    votesCurrent: 0,
-    votesRequired: 2,
-    avatarBg: C.pink,
-  },
-  {
-    id: 'proof_03',
-    submitterId: 'cybersam',
-    submitterName: 'CYBERSAM',
-    groupName: 'MORNING RUNNERS',
-    taskTitle: 'COLD PLUNGE 3 MIN',
-    geoTelemetry: '34.0522° N, 118.2437° W',
-    timestamp: '06:30 AM',
-    votesCurrent: 1,
-    votesRequired: 2,
-    avatarBg: C.yellow,
-  },
-];
-
 interface VerificationCardStackProps {
   onQueueCountChange?: (count: number) => void;
 }
@@ -109,7 +71,30 @@ export function VerificationCardStack({ onQueueCountChange }: VerificationCardSt
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 430);
 
-  const [queue, setQueue] = useState<ProofItem[]>(INITIAL_PROOFS);
+  const { data: serverQueue } = useVerificationQueueQuery();
+  const submitVoteMutation = useSubmitVoteMutation();
+
+  const [queue, setQueue] = useState<ProofItem[]>([]);
+
+  useEffect(() => {
+    if (serverQueue && serverQueue.length > 0) {
+      setQueue(
+        serverQueue.map((item, index) => ({
+          id: item.verificationId,
+          submitterId: item.ownerUserId,
+          submitterName: item.ownerUsername.toUpperCase(),
+          groupName: item.groupName.toUpperCase(),
+          taskTitle: item.taskTitle.toUpperCase(),
+          geoTelemetry: '37.7749° N, 122.4194° W',
+          timestamp: '07:42 AM',
+          votesCurrent: item.currentVoteCount,
+          votesRequired: 2,
+          avatarBg: index % 2 === 0 ? C.cyan : C.pink,
+        }))
+      );
+    }
+  }, [serverQueue]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dwellTimeRemaining, setDwellTimeRemaining] = useState(5);
   const [isDwellLocked, setIsDwellLocked] = useState(true);

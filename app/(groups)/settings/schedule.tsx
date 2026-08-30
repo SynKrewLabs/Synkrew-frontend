@@ -39,6 +39,7 @@ import {
 } from '../../../theme/tokens';
 import { TitleBar } from '../../../components/ui/TitleBar';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
+import { useTaskScheduleQuery, useSaveScheduleMutation, useMemberTasksQuery } from '../../../hooks/queries/useTasks';
 
 const DAYS_OF_WEEK = [
   'MONDAY',
@@ -53,34 +54,33 @@ const DAYS_OF_WEEK = [
 type DayName = (typeof DAYS_OF_WEEK)[number];
 type DayScheduleMap = Record<DayName, string[]>;
 
-interface MemberTask {
-  id: string;
-  title: string;
-  frequency: string;
-}
-
-const MEMBER_TASKS_DATA: MemberTask[] = [
-  { id: '1', title: '5K_OUTDOOR_RUN', frequency: 'DAILY' },
-  { id: '2', title: 'READ_20_PAGES', frequency: 'DAILY' },
-  { id: '3', title: 'CODE_CHALLENGE', frequency: 'WEEKLY' },
-];
-
 export default function TaskScheduleManagementScreen() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 448);
   const params = useLocalSearchParams();
 
   const groupName = params.name ? String(params.name) : 'NEON KNIGHTS';
+  const groupId = (params.id as string) || 'grp_neon_runners';
+
+  const { data: serverSchedule } = useTaskScheduleQuery(groupId);
+  const { data: memberTasks } = useMemberTasksQuery(groupId);
+  const saveScheduleMutation = useSaveScheduleMutation();
 
   const [schedule, setSchedule] = useState<DayScheduleMap>({
-    MONDAY: ['1', '2'],
-    TUESDAY: ['1'],
-    WEDNESDAY: ['2', '3'],
-    THURSDAY: ['1', '3'],
-    FRIDAY: ['1', '2'],
-    SATURDAY: ['1'],
-    SUNDAY: ['2'],
+    MONDAY: ['task_1', 'task_2'],
+    TUESDAY: ['task_1'],
+    WEDNESDAY: ['task_2', 'task_3'],
+    THURSDAY: ['task_1', 'task_3'],
+    FRIDAY: ['task_1', 'task_2'],
+    SATURDAY: ['task_1'],
+    SUNDAY: ['task_2'],
   });
+
+  React.useEffect(() => {
+    if (serverSchedule) {
+      setSchedule(serverSchedule as DayScheduleMap);
+    }
+  }, [serverSchedule]);
 
   const [expandedDay, setExpandedDay] = useState<DayName | null>('MONDAY');
   const [scheduleError, setScheduleError] = useState<string | null>(null);
@@ -118,6 +118,12 @@ export default function TaskScheduleManagementScreen() {
 
   const isBlocked = daysWithZeroTasks.length > 0;
 
+  const tasksList = memberTasks && memberTasks.length > 0 ? memberTasks : [
+    { id: 'task_1', title: '5K_OUTDOOR_RUN', frequency: 'DAILY' },
+    { id: 'task_2', title: 'READ_20_PAGES', frequency: 'DAILY' },
+    { id: 'task_3', title: 'CODE_CHALLENGE', frequency: 'WEEKLY' },
+  ];
+
   const handleSave = () => {
     if (isBlocked) {
       // TODO: replace with final blocked-state design once Stitch screen is ready
@@ -126,6 +132,11 @@ export default function TaskScheduleManagementScreen() {
       );
       return;
     }
+
+    saveScheduleMutation.mutate({
+      groupId,
+      schedule,
+    });
 
     Alert.alert(
       'SCHEDULE UPDATED',
@@ -236,7 +247,7 @@ export default function TaskScheduleManagementScreen() {
                         </Text>
 
                         <View style={styles.taskOptionList}>
-                          {MEMBER_TASKS_DATA.map(task => {
+                          {tasksList.map(task => {
                             const isChecked = assignedTaskIds.includes(task.id);
                             return (
                               <Pressable

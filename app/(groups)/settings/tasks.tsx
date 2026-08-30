@@ -40,6 +40,8 @@ import {
 import { TitleBar } from '../../../components/ui/TitleBar';
 import { ErrorBanner } from '../../../components/ui/ErrorBanner';
 
+import { useMemberTasksQuery, useSaveTasksMutation } from '../../../hooks/queries/useTasks';
+
 interface MemberTask {
   id: string;
   title: string;
@@ -48,20 +50,33 @@ interface MemberTask {
   isPaused: boolean;
 }
 
-const INITIAL_MEMBER_TASKS: MemberTask[] = [
-  { id: '1', title: '5K_OUTDOOR_RUN', frequency: 'DAILY', target: 1, isPaused: false },
-  { id: '2', title: 'READ_20_PAGES', frequency: 'DAILY', target: 1, isPaused: false },
-  { id: '3', title: 'CODE_CHALLENGE', frequency: 'WEEKLY', target: 3, isPaused: true },
-];
-
 export default function TaskDefinitionManagement() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 448);
   const params = useLocalSearchParams();
 
   const groupName = params.name ? String(params.name) : 'NEON KNIGHTS';
+  const groupId = (params.id as string) || 'grp_neon_runners';
 
-  const [tasks, setTasks] = useState<MemberTask[]>(INITIAL_MEMBER_TASKS);
+  const { data: serverTasks } = useMemberTasksQuery(groupId);
+  const saveTasksMutation = useSaveTasksMutation();
+
+  const [tasks, setTasks] = useState<MemberTask[]>([]);
+
+  React.useEffect(() => {
+    if (serverTasks && serverTasks.length > 0) {
+      setTasks(
+        serverTasks.map(t => ({
+          id: t.id,
+          title: t.title,
+          frequency: t.frequency,
+          target: t.target,
+          isPaused: t.isPaused,
+        }))
+      );
+    }
+  }, [serverTasks]);
+
   const [deleteBlockedError, setDeleteBlockedError] = useState<string | null>(null);
 
   const [newTitle, setNewTitle] = useState('');
@@ -110,10 +125,16 @@ export default function TaskDefinitionManagement() {
       isPaused: false,
     };
 
-    setTasks(prev => [...prev, newTask]);
+    const updated = [...tasks, newTask];
+    setTasks(updated);
     setNewTitle('');
     setNewTarget(1);
     setDeleteBlockedError(null);
+
+    saveTasksMutation.mutate({
+      groupId,
+      tasks: updated,
+    });
   };
 
   return (

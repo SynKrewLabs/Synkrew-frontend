@@ -33,6 +33,7 @@ import {
 import { TitleBar } from '../../components/ui/TitleBar';
 import { SkeletonBlock } from '../../components/ui/Skeleton';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
+import { useWalletBalanceQuery } from '../../hooks/queries/useWallet';
 
 export type WalletViewState = 'balance' | 'zero' | 'loading';
 
@@ -41,14 +42,15 @@ export default function WalletHome() {
   const insets = useSafeAreaInsets();
   const cardWidth = Math.min(width - S.md * 2, 448);
 
+  const { data: walletData, isLoading } = useWalletBalanceQuery();
+
   const [viewState, setViewState] = useState<WalletViewState>('balance');
 
-  // Mock wallet data — replace with real wallet API
-  const available = 840;
-  const locked = 72;          // today's stake
-  const stakePercent = 60;
-  const balanceBeforeStake = 120; // locked = 60% of 120
-  const total = available + locked;
+  const available = walletData?.availableCoins ?? 840;
+  const locked = walletData?.lockedCoins ?? 72;
+  const stakePercent = walletData?.todayStakePercent ?? 60;
+  const balanceBeforeStake = Math.round(locked / (stakePercent / 100)) || 120;
+  const total = walletData?.totalCoins ?? available + locked;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>

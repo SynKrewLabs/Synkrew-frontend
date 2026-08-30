@@ -24,6 +24,8 @@ import {
   JetBrainsMono_700Bold,
 } from '@expo-google-fonts/jetbrains-mono';
 import { Colors } from '../theme';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../lib/query-client';
 
 // Keep native splash screen visible while fonts load
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -54,36 +56,38 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: Colors.backgroundApp },
-          animation: 'fade',
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(onboarding)/splash" />
-        <Stack.Screen name="(onboarding)/welcome" />
-        <Stack.Screen name="(auth)/signup" />
-        <Stack.Screen name="(auth)/login" />
-        <Stack.Screen name="(auth)/verify" />
-        <Stack.Screen name="(auth)/forgot-password" />
-        <Stack.Screen name="(auth)/reset-password" />
-        <Stack.Screen name="(auth)/session-expired" />
-        <Stack.Screen name="(main)/groups" />
-        <Stack.Screen name="(groups)" />
-        <Stack.Screen name="(task)" />
-        <Stack.Screen name="(verify)" />
-        <Stack.Screen name="(settlement)" />
-        <Stack.Screen name="(league)" />
-        <Stack.Screen name="(wallet)" />
-        <Stack.Screen name="(subscription)" />
-        <Stack.Screen name="(profile)" />
-        <Stack.Screen name="(notifications)" />
-        <Stack.Screen name="(permissions)" />
-      </Stack>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: Colors.backgroundApp },
+            animation: 'fade',
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(onboarding)/splash" />
+          <Stack.Screen name="(onboarding)/welcome" />
+          <Stack.Screen name="(auth)/signup" />
+          <Stack.Screen name="(auth)/login" />
+          <Stack.Screen name="(auth)/verify" />
+          <Stack.Screen name="(auth)/forgot-password" />
+          <Stack.Screen name="(auth)/reset-password" />
+          <Stack.Screen name="(auth)/session-expired" />
+          <Stack.Screen name="(main)/groups" />
+          <Stack.Screen name="(groups)" />
+          <Stack.Screen name="(task)" />
+          <Stack.Screen name="(verify)" />
+          <Stack.Screen name="(settlement)" />
+          <Stack.Screen name="(league)" />
+          <Stack.Screen name="(wallet)" />
+          <Stack.Screen name="(subscription)" />
+          <Stack.Screen name="(profile)" />
+          <Stack.Screen name="(notifications)" />
+          <Stack.Screen name="(permissions)" />
+        </Stack>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

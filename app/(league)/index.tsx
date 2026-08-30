@@ -39,8 +39,8 @@ import {
 import { TitleBar } from '../../components/ui/TitleBar';
 import { OfflineBanner } from '../../components/ui/OfflineBanner';
 import { SkeletonBlock, SkeletonRow } from '../../components/ui/Skeleton';
-import { EmptyState } from '../../components/ui/EmptyState';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
+import { useLeagueStandingsQuery } from '../../hooks/queries/useLeague';
 
 export type LeagueViewState = 'standings' | 'season_off' | 'not_ranked' | 'loading';
 
@@ -135,12 +135,29 @@ export default function LeagueStandings() {
   const insets = useSafeAreaInsets();
   const cardWidth = Math.min(width - S.md * 2, 448);
 
+  const { data: serverStandings } = useLeagueStandingsQuery();
+
   // Demo state switcher
   const [viewState, setViewState] = useState<LeagueViewState>('standings');
 
-  const rankedGroups = MOCK_STANDINGS.filter(g => !g.isUnranked);
-  const unrankedGroups = MOCK_STANDINGS.filter(g => g.isUnranked);
-  const myGroup = MOCK_STANDINGS.find(g => g.isCurrentUserGroup && !g.isUnranked);
+  const activeStandings = serverStandings?.standings && serverStandings.standings.length > 0
+    ? serverStandings.standings.map(s => ({
+        rank: s.rank,
+        groupId: s.groupId,
+        groupName: s.groupName,
+        points: s.points,
+        passRate: s.taskConsistencyPercent,
+        verifyRate: s.verificationConsistencyPercent,
+        memberCount: 5,
+        rankChange: s.rank === 1 ? 0 : 1,
+        isCurrentUserGroup: s.groupId === 'grp_neon_runners',
+        isUnranked: false,
+      }))
+    : MOCK_STANDINGS;
+
+  const rankedGroups = activeStandings.filter(g => !g.isUnranked);
+  const unrankedGroups = activeStandings.filter(g => g.isUnranked);
+  const myGroup = activeStandings.find(g => g.isCurrentUserGroup && !g.isUnranked);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>

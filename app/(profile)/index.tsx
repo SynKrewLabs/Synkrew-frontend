@@ -28,6 +28,7 @@ import {
 } from '../../theme/tokens';
 import { TitleBar } from '../../components/ui/TitleBar';
 import { BottomNavBar, BOTTOM_NAV_BASE_HEIGHT } from '../../components/groups/BottomNavBar';
+import { useUserProfileQuery } from '../../hooks/queries/useProfile';
 
 interface Achievement {
   id: string;
@@ -48,6 +49,11 @@ const ACHIEVEMENTS: Achievement[] = [
 export default function ProfileHomeScreen() {
   const { width } = useWindowDimensions();
   const cardWidth = Math.min(width - S.md * 2, 460);
+
+  const { data: profile } = useUserProfileQuery();
+  const username = profile?.username || 'KREW_MEMBER_01';
+  const currentStreak = profile?.streaks.currentStreak ?? 14;
+  const maxStreak = profile?.streaks.longestStreak ?? 89;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
@@ -87,7 +93,7 @@ export default function ProfileHomeScreen() {
                 <Text style={styles.levelBadgeText}>LVL 42 EXPLORER</Text>
               </View>
             </View>
-            <Text style={styles.username}>KREW_MEMBER_01</Text>
+            <Text style={styles.username}>{username}</Text>
             <Text style={styles.userHandle}>#8942-SYN • JOINED CYCLE 04</Text>
           </View>
 
@@ -114,7 +120,7 @@ export default function ProfileHomeScreen() {
               <View style={[styles.streakTag, { backgroundColor: C.pink }]}>
                 <Text style={styles.streakTagText}>CURRENT.RUN</Text>
               </View>
-              <Text style={styles.streakCount}>14</Text>
+              <Text style={styles.streakCount}>{currentStreak}</Text>
               <Text style={styles.streakUnit}>Days Active</Text>
             </View>
 
@@ -122,7 +128,7 @@ export default function ProfileHomeScreen() {
               <View style={[styles.streakTag, { backgroundColor: C.mint }]}>
                 <Text style={styles.streakTagText}>MAX_RUN.LOG</Text>
               </View>
-              <Text style={styles.streakCount}>89</Text>
+              <Text style={styles.streakCount}>{maxStreak}</Text>
               <Text style={styles.streakUnit}>Personal Best</Text>
             </View>
           </View>
